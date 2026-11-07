@@ -140,15 +140,12 @@
   <div class="login-card">
     <h1>Admin Psikotes</h1>
     <p>PT. Sumatera Kemasindo — masuk untuk melihat hasil peserta</p>
-    <div class="error-msg" id="login-error">Email atau password salah.</div>
-    <label>Email / Username</label>
-    <input type="text" id="login-email" placeholder="admin atau email Supabase" value="admin">
+    <div class="error-msg" id="login-error">Username atau password salah.</div>
+    <label>Username</label>
+    <input type="text" id="login-email" placeholder="Username" value="adm123" autocomplete="username">
     <label>Password</label>
-    <input type="password" id="login-password" placeholder="admin123" value="admin123">
+    <input type="password" id="login-password" placeholder="Password" value="123" autocomplete="current-password">
     <button class="btn" id="login-btn" onclick="login()">Masuk</button>
-    <p style="font-size:0.75rem; color:var(--text-soft); text-align:center; margin-top:14px; margin-bottom:0;">
-      Password default: <code style="background:var(--bg); padding:2px 6px; border-radius:4px; font-weight:700;">admin123</code>
-    </p>
   </div>
 </div>
 
@@ -229,64 +226,26 @@ let accessToken = null;
 let allData = [];
 
 // ════════════════════════════════════════════════
-//  LOGIN (Supabase Auth)
+//  LOGIN (Hardcoded Credentials)
 // ════════════════════════════════════════════════
-async function login() {
-  const email = document.getElementById('login-email').value.trim();
+const ADMIN_USER = "adm123";
+const ADMIN_PASS = "123";
+
+function login() {
+  const user = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
   const errEl = document.getElementById('login-error');
-  const btn = document.getElementById('login-btn');
   errEl.classList.remove('show');
 
-  if (!email || !password) {
-    errEl.textContent = "Isi email dan password dulu ya.";
-    errEl.classList.add('show');
-    return;
-  }
-
-  // 1. Cek Master Password Lokal untuk akses instan
-  if (password === "admin123" || password === "admin") {
+  if (user === ADMIN_USER && password === ADMIN_PASS) {
     accessToken = "local_admin";
     sessionStorage.setItem('psikotes_admin_token', accessToken);
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('dashboard-screen').style.display = 'block';
     loadData();
-    return;
-  }
-
-  // 2. Atau autentikasi via Supabase Auth jika ada akun terdaftar
-  btn.disabled = true;
-  btn.textContent = "Memproses...";
-
-  try {
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-      method: "POST",
-      headers: {
-        "apikey": SUPABASE_KEY,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await res.json();
-
-    if (!res.ok || !data.access_token) {
-      errEl.textContent = "Email atau password salah.";
-      errEl.classList.add('show');
-      btn.disabled = false;
-      btn.textContent = "Masuk";
-      return;
-    }
-
-    accessToken = data.access_token;
-    sessionStorage.setItem('psikotes_admin_token', accessToken);
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('dashboard-screen').style.display = 'block';
-    loadData();
-  } catch (e) {
-    errEl.textContent = "Gagal terhubung ke server. Coba lagi.";
+  } else {
+    errEl.textContent = "Username atau password salah.";
     errEl.classList.add('show');
-    btn.disabled = false;
-    btn.textContent = "Masuk";
   }
 }
 
@@ -295,12 +254,17 @@ function logout() {
   accessToken = null;
   document.getElementById('dashboard-screen').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('login-email').value = '';
-  document.getElementById('login-password').value = '';
+  document.getElementById('login-email').value = ADMIN_USER;
+  document.getElementById('login-password').value = ADMIN_PASS;
 }
 
 // Cek kalau sudah login sebelumnya di tab ini
 window.addEventListener('DOMContentLoaded', () => {
+  const passInp = document.getElementById('login-password');
+  const userInp = document.getElementById('login-email');
+  if (passInp) passInp.addEventListener('keyup', (e) => { if (e.key === 'Enter') login(); });
+  if (userInp) userInp.addEventListener('keyup', (e) => { if (e.key === 'Enter') login(); });
+
   const saved = sessionStorage.getItem('psikotes_admin_token');
   if (saved) {
     accessToken = saved;
