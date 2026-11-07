@@ -141,11 +141,14 @@
     <h1>Admin Psikotes</h1>
     <p>PT. Sumatera Kemasindo — masuk untuk melihat hasil peserta</p>
     <div class="error-msg" id="login-error">Email atau password salah.</div>
-    <label>Email</label>
-    <input type="email" id="login-email" placeholder="admin@email.com">
+    <label>Email / Username</label>
+    <input type="text" id="login-email" placeholder="admin atau email Supabase" value="admin">
     <label>Password</label>
-    <input type="password" id="login-password" placeholder="••••••••">
+    <input type="password" id="login-password" placeholder="admin123" value="admin123">
     <button class="btn" id="login-btn" onclick="login()">Masuk</button>
+    <p style="font-size:0.75rem; color:var(--text-soft); text-align:center; margin-top:14px; margin-bottom:0;">
+      Password default: <code style="background:var(--bg); padding:2px 6px; border-radius:4px; font-weight:700;">admin123</code>
+    </p>
   </div>
 </div>
 
@@ -241,6 +244,17 @@ async function login() {
     return;
   }
 
+  // 1. Cek Master Password Lokal untuk akses instan
+  if (password === "admin123" || password === "admin") {
+    accessToken = "local_admin";
+    sessionStorage.setItem('psikotes_admin_token', accessToken);
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard-screen').style.display = 'block';
+    loadData();
+    return;
+  }
+
+  // 2. Atau autentikasi via Supabase Auth jika ada akun terdaftar
   btn.disabled = true;
   btn.textContent = "Memproses...";
 
@@ -308,7 +322,7 @@ async function loadData() {
     const headers = {
       "apikey": SUPABASE_KEY,
     };
-    if (accessToken) {
+    if (accessToken && accessToken !== "local_admin") {
       headers["Authorization"] = `Bearer ${accessToken}`;
     } else if (SUPABASE_KEY.startsWith("ey")) {
       headers["Authorization"] = `Bearer ${SUPABASE_KEY}`;
