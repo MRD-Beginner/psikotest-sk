@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=2b7403fb-37e8-4242-81b2-9dcad77239d1
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Hasil Psikotes PT. Sumatera Kemasindo</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --bg: #f0f2f5;
+    --surface: #ffffff;
+    --primary: #1a2744;
+    --accent: #e63946;
+    --accent2: #2a9d8f;
+    --text: #1a2744;
+    --text-soft: #6b7a99;
+    --border: #dde3f0;
+    --radius: 14px;
+    --shadow: 0 4px 24px rgba(26,39,68,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+  .mono { font-family: 'DM Mono', monospace; }
+
+  /* ── LOGIN SCREEN ── */
+  #login-screen {
+    min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  }
+  .login-card {
+    background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 36px 32px; width: 100%; max-width: 380px; margin: 0 16px;
+  }
+  .login-card h1 { font-size: 1.3rem; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
+  .login-card p { font-size: 0.85rem; color: var(--text-soft); margin-bottom: 24px; }
+  label { font-size: 0.82rem; font-weight: 600; margin-bottom: 6px; display: block; }
+  input[type="email"], input[type="password"] {
+    width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px;
+    font-family: inherit; font-size: 0.95rem; margin-bottom: 16px; outline: none; background: var(--bg);
+  }
+  input[type="email"]:focus, input[type="password"]:focus { border-color: var(--primary); background: #fff; }
+  .btn {
+    display: block; width: 100%; padding: 13px 20px; background: var(--primary); color: #fff;
+    border: none; border-radius: 10px; font-family: inherit; font-size: 0.95rem; font-weight: 700;
+    cursor: pointer; transition: transform 0.15s;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--border); }
+  .btn-accent2 { background: var(--accent2); }
+  .error-msg { color: var(--accent); font-size: 0.82rem; margin-bottom: 14px; display: none; }
+  .error-msg.show { display: block; }
+
+  /* ── DASHBOARD ── */
+  #dashboard-screen { display: none; padding: 24px; max-width: 1200px; margin: 0 auto; }
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
+    flex-wrap: wrap; gap: 12px;
+  }
+  .topbar h1 { font-size: 1.3rem; font-weight: 800; color: var(--primary); }
+  .topbar-actions { display: flex; gap: 10px; }
+  .topbar-actions .btn { width: auto; padding: 10px 18px; font-size: 0.85rem; }
+
+  .stat-row { display: flex; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
+  .stat-card {
+    background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 16px 20px; flex: 1; min-width: 140px;
+  }
+  .stat-card .num { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
+  .stat-card .lbl { font-size: 0.78rem; color: var(--text-soft); margin-top: 2px; }
+
+  .table-wrap {
+    background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+    overflow-x: auto;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+  th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { background: var(--bg); color: var(--text-soft); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.4px; }
+  tr:hover td { background: #fafbfd; }
+  .badge {
+    display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;
+  }
+  .badge-good { background: rgba(42,157,143,0.15); color: var(--accent2); }
+  .badge-bad { background: rgba(230,57,70,0.15); color: var(--accent); }
+  .link-btn {
+    background: none; border: none; color: var(--primary); font-weight: 700; cursor: pointer;
+    font-family: inherit; font-size: 0.85rem; text-decoration: underline;
+  }
+  #loading-msg, #empty-msg { padding: 40px; text-align: center; color: var(--text-soft); }
+
+  /* ── DETAIL MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(26,39,68,0.55);
+    align-items: flex-start; justify-content: center; z-index: 999; padding: 30px 16px; overflow-y: auto;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: var(--surface); border-radius: var(--radius); max-width: 720px; width: 100%;
+    padding: 28px; margin-bottom: 30px;
+  }
+  .modal-box h2 { font-size: 1.2rem; color: var(--primary); margin-bottom: 4px; }
+  .modal-box .sub { font-size: 0.82rem; color: var(--text-soft); margin-bottom: 20px; }
+  .modal-close { float: right; background: var(--bg); border: none; border-radius: 8px; padding: 6px 12px; cursor: pointer; font-weight: 700; }
+  .section-title {
+    font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px;
+    color: var(--text-soft); margin: 20px 0 8px;
+  }
+  .kv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; font-size: 0.85rem; }
+  .kv-grid div span { color: var(--text-soft); }
+  .qa-row { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+  .qa-row .q { font-weight: 600; margin-bottom: 4px; }
+  .qa-row .a { color: var(--text-soft); }
+  .qa-row .a.wrong { color: var(--accent); }
+  .qa-row .a.right { color: var(--accent2); }
+
+  /* ── PRINT MEDIA QUERY ── */
+  @media print {
+    #login-screen, .topbar-actions, .modal-close, #btn-print-detail, .link-btn { display: none !important; }
+    body, #dashboard-screen { background: #fff !important; color: #000 !important; padding: 0 !important; }
+    .table-wrap, .stat-card { box-shadow: none !important; border: 1px solid #ccc !important; }
+    th { background: #eee !important; color: #000 !important; }
+    td, th { border: 1px solid #ccc !important; }
+    .modal-overlay.show { position: static !important; background: none !important; padding: 0 !important; }
+    .modal-box { box-shadow: none !important; border: none !important; max-width: 100% !important; padding: 0 !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════ LOGIN ═══════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <h1>Admin Psikotes</h1>
+    <p>PT. Sumatera Kemasindo — masuk untuk melihat hasil peserta</p>
+    <div class="error-msg" id="login-error">Email atau password salah.</div>
+    <label>Email</label>
+    <input type="email" id="login-email" placeholder="admin@email.com">
+    <label>Password</label>
+    <input type="password" id="login-password" placeholder="••••••••">
+    <button class="btn" id="login-btn" onclick="login()">Masuk</button>
+  </div>
+</div>
+
+<!-- ═══════════ DASHBOARD ═══════════ -->
+<div id="dashboard-screen">
+  <div class="topbar">
+    <h1>Hasil Psikotes</h1>
+    <div class="topbar-actions">
+      <button class="btn" onclick="printRekap()" style="background:#1a2744;">🖨 Cetak Rekap Peserta</button>
+      <button class="btn btn-accent2" onclick="exportExcel()">⬇ Export ke Excel</button>
+      <button class="btn btn-outline" onclick="logout()">Keluar</button>
+    </div>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-card"><div class="num" id="stat-total">—</div><div class="lbl">Total Peserta</div></div>
+    <div class="stat-card"><div class="num" id="stat-avg">—</div><div class="lbl">Rata-rata Skor Psikotes</div></div>
+    <div class="stat-card"><div class="num" id="stat-tabswitch">—</div><div class="lbl">Peserta Pindah Tab (≥1x)</div></div>
+  </div>
+
+  <div class="table-wrap">
+    <div id="loading-msg">Memuat data...</div>
+    <div id="empty-msg" style="display:none;">Belum ada peserta yang mengisi tes.</div>
+    <table id="result-table" style="display:none;">
+      <thead>
+        <tr>
+          <th>Nama</th>
+          <th>Waktu Submit</th>
+          <th>Skor Psikotes</th>
+          <th>Skor Ketelitian</th>
+          <th>Pindah Tab</th>
+          <th>Detail</th>
+        </tr>
+      </thead>
+      <tbody id="result-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════ DETAIL MODAL ═══════════ -->
+<div class="modal-overlay" id="detail-modal">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeDetail()">✕ Tutup</button>
+    <button class="modal-close" id="btn-print-detail" onclick="printDetail()" style="margin-right:8px;">🖨 Print</button>
+    <h2 id="detail-nama">—</h2>
+    <div class="sub" id="detail-sub">—</div>
+
+    <div class="section-title">Biodata</div>
+    <div class="kv-grid" id="detail-biodata"></div>
+
+    <div class="section-title">Buta Warna (Ishihara)</div>
+    <div class="kv-grid" id="detail-butawarna"></div>
+
+    <div class="section-title">Jawaban Psikotes</div>
+    <div id="detail-jawaban"></div>
+
+    <div class="section-title">Tes Ketelitian</div>
+    <div class="kv-grid" id="detail-ketelitian"></div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+//  CONFIG (harus sama dengan index.html)
+// ════════════════════════════════════════════════
+const SUPABASE_URL = "https://bhrkpavpodyceqflbalf.supabase.co";
+const SUPABASE_KEY = "sb_publishable_6H_HEq-ZS0kM5XqgsTOOgw_NcmCAQ2K";
+const SUPABASE_TABLE = "psikotes_hasil";
+
+// Kunci jawaban tes ketelitian (harus sama persis dengan index.html)
+const KETELITIAN_KUNCI = {
+  1:'4,6', 2:'3,8,10', 3:'2,5,8', 4:'4,9', 5:'3,4,6,7,9',
+  6:'3,4,9', 7:'3,5,8', 8:'1,5,6,8', 9:'5,7,10', 10:'2,4,10',
+  11:'3,4,7,9', 12:'2,4,5,9,10', 13:'2,3,8,9', 14:'3,6,10', 15:'1,6,9',
+};
+
+let accessToken = null;
+let allData = [];
+
+// ════════════════════════════════════════════════
+//  LOGIN (Supabase Auth)
+// ════════════════════════════════════════════════
+async function login() {
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  const btn = document.getElementById('login-btn');
+  errEl.classList.remove('show');
+
+  if (!email || !password) {
+    errEl.textContent = "Isi email dan password dulu ya.";
+    errEl.classList.add('show');
+    return;
+  }g
+
+  btn.disabled = true;
+  btn.textContent = "Memproses...";
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: "POST",
+      headers: {
+        "apikey": SUPABASE_KEY,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await res.json();
+
+    if (!res.ok || !data.access_token) {
+      errEl.textContent = "Email atau password salah.";
+      errEl.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = "Masuk";
+      return;
+    }
+
+    accessToken = data.access_token;
+    sessionStorage.setItem('psikotes_admin_token', accessToken);
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard-screen').style.display = 'block';
+    loadData();
+  } catch (e) {
+    errEl.textContent = "Gagal terhubung ke server. Coba lagi.";
+    errEl.classList.add('show');
+    btn.disabled = false;
+    btn.textContent = "Masuk";
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem('psikotes_admin_token');
+  accessToken = null;
+  document.getElementById('dashboard-screen').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-password').value = '';
+}
+
+// Cek kalau sudah login sebelumnya di tab ini
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = sessionStorage.getItem('psikotes_admin_token');
+  if (saved) {
+    accessToken = saved;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard-screen').style.display = 'block';
+    loadData();
+  }
+});
+
+// ════════════════════════════════════════════════
+//  LOAD DATA
+// ════════════════════════════════════════════════
+async function loadData() {
+  document.getElementById('loading-msg').style.display = 'block';
+  document.getElementById('empty-msg').style.display = 'none';
+  document.getElementById('result-table').style.display = 'none';
+
+  try {
+    const headers = {
+      "apikey": SUPABASE_KEY,
+    };
+    if (accessToken) {
+      headers["Authorization"] = `Bearer ${accessToken}`;
+    } else if (SUPABASE_KEY.startsWith("ey")) {
+      headers["Authorization"] = `Bearer ${SUPABASE_KEY}`;
+    }
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?select=*&order=created_at.desc`, {
+      headers: headers,
+    });
+
+    if (res.status === 401) {
+      alert("Sesi login habis, silakan masuk ulang.");
+      logout();
+      return;
+    }
+
+    allData = await res.json();
+    renderTable();
+  } catch (e) {
+    document.getElementById('loading-msg').textContent = "Gagal memuat data: " + e.message;
+  }
+}
+
+function renderTable() {
+  document.getElementById('loading-msg').style.display = 'none';
+
+  if (!allData.length) {
+    document.getElementById('empty-msg').style.display = 'block';
+    return;
+  }
+
+  // Stats
+  document.getElementById('stat-total').textContent = allData.length;
+  const avgSkor = allData.reduce((a, r) => a + (r.skor || 0), 0) / allData.length;
+  document.getElementById('stat-avg').textContent = avgSkor.toFixed(1) + ' / ' + (allData[0].total_soal || '-');
+  const tabSwitchCount = allData.filter(r => (r.tab_switch || 0) > 0).length;
+  document.getElementById('stat-tabswitch').textContent = tabSwitchCount;
+
+  const tbody = document.getElementById('result-tbody');
+  tbody.innerHTML = '';
+  allData.forEach((row, i) => {
+    const tr = document.createElement('tr');
+    const ketSkor = row.ketelitian && row.ketelitian._skor !== undefined
+      ? `${row.ketelitian._skor} / ${row.ketelitian._total}` : '-';
+    tr.innerHTML = `
+      <td>${escapeHtml(row.nama || '-')}</td>
+      <td class="mono">${escapeHtml(row.waktu_submit || '-')}</td>
+      <td><span class="badge ${scoreBadge(row.skor, row.total_soal)}">${row.skor ?? '-'} / ${row.total_soal ?? '-'}</span></td>
+      <td>${ketSkor}</td>
+      <td>${row.tab_switch > 0 ? `<span class="badge badge-bad">${row.tab_switch}x</span>` : '0'}</td>
+      <td><button class="link-btn" onclick="openDetail(${i})">Lihat Detail</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('result-table').style.display = 'table';
+}
+
+function scoreBadge(skor, total) {
+  if (skor === undefined || !total) return '';
+  return (skor / total) >= 0.6 ? 'badge-good' : 'badge-bad';
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ════════════════════════════════════════════════
+//  DETAIL MODAL
+// ════════════════════════════════════════════════
+let currentDetailIndex = null;
+
+function openDetail(i) {
+  currentDetailIndex = i;
+  const row = allData[i];
+  document.getElementById('detail-nama').textContent = row.nama || '-';
+  document.getElementById('detail-sub').textContent =
+    `Submit: ${row.waktu_submit || '-'} · Skor Psikotes: ${row.skor ?? '-'}/${row.total_soal ?? '-'} · Pindah tab: ${row.tab_switch ?? 0}x`;
+
+  // Biodata
+  const bd = row.biodata || {};
+  const bdLabels = {
+    posisi: 'Posisi', nama: 'Nama', panggilan: 'Panggilan', no_ktp: 'No. KTP',
+    tempat_lahir: 'Tempat Lahir', tgl_lahir: 'Tgl Lahir', jenis_kelamin: 'Jenis Kelamin',
+    status_nikah: 'Status Nikah', agama: 'Agama', suku: 'Suku', gol_darah: 'Gol. Darah',
+    no_hp: 'No. HP', tinggi: 'Tinggi (cm)', berat: 'Berat (kg)', email: 'Email',
+    alamat: 'Alamat', status_tinggal: 'Status Tinggal', pendidikan: 'Pendidikan',
+    jurusan: 'Jurusan', sekolah: 'Sekolah', thn_masuk: 'Thn Masuk', thn_lulus: 'Thn Lulus',
+    perusahaan_terakhir: 'Perusahaan Terakhir', jabatan_terakhir: 'Jabatan Terakhir',
+    alasan_keluar: 'Alasan Keluar', masa_kerja_mulai: 'Masa Kerja Mulai', masa_kerja_sampai: 'Masa Kerja Sampai',
+  };
+  document.getElementById('detail-biodata').innerHTML = Object.entries(bdLabels).map(([key, label]) =>
+    `<div><span>${label}:</span> ${escapeHtml(bd[key] || '-')}</div>`
+  ).join('');
+
+  // Buta warna
+  const bw = row.buta_warna || {};
+  const bwEntries = Object.entries(bw);
+  document.getElementById('detail-butawarna').innerHTML = bwEntries.length
+    ? bwEntries.map(([k, v]) => `<div><span>${k}:</span> ${escapeHtml(v)}</div>`).join('')
+    : '<div>Tidak ada data</div>';
+
+  // Jawaban psikotes
+  const jw = row.jawaban || {};
+  const jwEntries = Object.values(jw).sort((a, b) => (a.no_urut || 0) - (b.no_urut || 0));
+  document.getElementById('detail-jawaban').innerHTML = jwEntries.length ? jwEntries.map(item => `
+    <div class="qa-row">
+      <div class="q">${item.no_urut}. [${escapeHtml(item.kategori || '-')}] ${escapeHtml(item.soal || '-')}</div>
+      <div class="a ${item.benar ? 'right' : 'wrong'}">
+        Jawaban: ${escapeHtml(item.pilihan_user || '-')} ${item.benar ? '✓ Benar' : '✗ Salah (kunci: ' + escapeHtml(item.jawaban_benar || '-') + ')'}
+      </div>
+    </div>
+  `).join('') : '<div>Tidak ada data</div>';
+
+  // Ketelitian
+  const ket = row.ketelitian || {};
+  const ketEntries = Object.entries(ket).filter(([k]) => !k.startsWith('_'));
+  let ketHtml = ketEntries.map(([k, v]) => `<div><span>${k}:</span> ${escapeHtml(v)}</div>`).join('');
+  if (ket._skor !== undefined) {
+    ketHtml = `<div><span>Skor:</span> ${ket._skor} / ${ket._total}</div>` + ketHtml;
+  }
+  document.getElementById('detail-ketelitian').innerHTML = ketHtml || '<div>Tidak ada data</div>';
+
+  document.getElementById('detail-modal').classList.add('show');
+}
+
+function closeDetail() {
+  document.getElementById('detail-modal').classList.remove('show');
+}
+
+// ════════════════════════════════════════════════
+//  PRINT HASIL PESERTA
+// ════════════════════════════════════════════════
+function printDetail() {
+  if (currentDetailIndex === null) return;
+  const row = allData[currentDetailIndex];
+  const bd = row.biodata || {};
+  const bw = row.buta_warna || {};
+  const jw = Object.values(row.jawaban || {}).sort((a, b) => (a.no_urut || 0) - (b.no_urut || 0));
+  const ket = row.ketelitian || {};
+
+  const bdLabels = {
+    posisi: 'Posisi', nama: 'Nama', panggilan: 'Panggilan', no_ktp: 'No. KTP',
+    tempat_lahir: 'Tempat Lahir', tgl_lahir: 'Tgl Lahir', jenis_kelamin: 'Jenis Kelamin',
+    status_nikah: 'Status Nikah', agama: 'Agama', suku: 'Suku', gol_darah: 'Gol. Darah',
+    no_hp: 'No. HP', tinggi: 'Tinggi (cm)', berat: 'Berat (kg)', email: 'Email',
+    alamat: 'Alamat', status_tinggal: 'Status Tinggal', pendidikan: 'Pendidikan',
+    jurusan: 'Jurusan', sekolah: 'Sekolah', thn_masuk: 'Thn Masuk', thn_lulus: 'Thn Lulus',
+    perusahaan_terakhir: 'Perusahaan Terakhir', jabatan_terakhir: 'Jabatan Terakhir',
+    alasan_keluar: 'Alasan Keluar', masa_kerja_mulai: 'Masa Kerja Mulai', masa_kerja_sampai: 'Masa Kerja Sampai',
+  };
+
+  const bdRows = Object.entries(bdLabels).map(([key, label]) =>
+    `<div class="p-kv"><span class="p-label">${label}</span><span class="p-val">${escapeHtml(bd[key] || '-')}</span></div>`
+  ).join('');
+
+  const bwEntries = Object.entries(bw);
+  const bwRows = bwEntries.length ? bwEntries.map(([k, v]) =>
+    `<div class="p-kv p-kv-sm"><span class="p-label p-label-sm">${escapeHtml(k)}</span><span class="p-val">${escapeHtml(v)}</span></div>`
+  ).join('') : '<div class="p-empty">Tidak ada data</div>';
+
+  const jwRows = jw.length ? jw.map(item => `
+    <tr>
+      <td class="col-no">${item.no_urut}</td>
+      <td class="col-kat">${escapeHtml(item.kategori || '-')}</td>
+      <td class="col-soal">${escapeHtml(item.soal || '-')}</td>
+      <td class="col-jwb">${escapeHtml(item.pilihan_user || '-')}</td>
+      <td class="col-jwb">${escapeHtml(item.jawaban_benar || '-')}</td>
+      <td class="col-status ${item.benar ? 'p-benar' : 'p-salah'}">${item.benar ? 'Benar' : 'Salah'}</td>
+    </tr>
+  `).join('') : '<tr><td colspan="6">Tidak ada data</td></tr>';
+
+  // Tes ketelitian: cocokkan dengan kunci jawaban supaya tampil status benar/salah
+  const ketNos = Object.keys(ket).filter(k => !k.startsWith('_')).map(k => parseInt(k.replace('no_', ''), 10)).sort((a,b) => a-b);
+  const ketRows = ketNos.length ? ketNos.map(no => {
+    const jawUser = (ket[`no_${no}`] || '-').toString();
+    const kunci = KETELITIAN_KUNCI[no] || '-';
+    const isBenar = jawUser.replace(/\s/g,'') === kunci.replace(/\s/g,'');
+    return `
+    <tr>
+      <td class="col-no">${no}</td>
+      <td class="col-jwb">${escapeHtml(jawUser)}</td>
+      <td class="col-jwb">${escapeHtml(kunci)}</td>
+      <td class="col-status ${isBenar ? 'p-benar' : 'p-salah'}">${isBenar ? 'Benar' : 'Salah'}</td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="4">Tidak ada data</td></tr>';
+
+  const html = `
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Hasil Psikotes - ${escapeHtml(row.nama || '-')}</title>
+<style>
+  @page { size: A4 portrait; margin: 14mm 13mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: Arial, Helvetica, sans-serif; color: #1a2744; font-size: 11px;
+    line-height: 1.4; margin: 0;
+  }
+  h1 { font-size: 17px; margin: 0 0 2px; }
+  .p-header { border-bottom: 3px solid #1a2744; padding-bottom: 10px; margin-bottom: 14px; }
+  .p-header .company { font-size: 11px; color: #6b7a99; font-weight: bold; letter-spacing: 0.3px; }
+  .p-sub { font-size: 11px; color: #6b7a99; margin-top: 3px; }
+
+  .p-skor-box { display: flex; gap: 12px; margin: 12px 0 16px; }
+  .p-skor-box div { border: 1px solid #dde3f0; border-radius: 6px; padding: 7px 14px; text-align: center; flex: 1; }
+  .p-skor-box .num { font-size: 18px; font-weight: bold; }
+  .p-skor-box .lbl { font-size: 9px; color: #6b7a99; letter-spacing: 0.3px; }
+
+  .section-title {
+    font-size: 10.5px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.4px;
+    color: #fff; background: #1a2744; margin: 16px 0 8px; padding: 4px 8px; border-radius: 3px;
+  }
+  .section-title:first-of-type { margin-top: 0; }
+
+  .p-kv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; }
+  .p-kv { display: flex; gap: 6px; padding: 2px 0; border-bottom: 1px dotted #e5e9f2; }
+  .p-kv-sm { grid-template-columns: unset; }
+  .p-label { color: #6b7a99; min-width: 118px; flex-shrink: 0; }
+  .p-label-sm { min-width: 60px; }
+  .p-val { font-weight: 500; word-break: break-word; }
+  .p-empty { color: #6b7a99; font-style: italic; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 4px; table-layout: fixed; }
+  th, td { border: 1px solid #dde3f0; padding: 4px 6px; text-align: left; font-size: 10px; vertical-align: top; word-wrap: break-word; }
+  th { background: #f0f2f5; font-size: 9px; text-transform: uppercase; color: #6b7a99; }
+
+  .jawaban-table .col-no   { width: 4%; text-align: center; }
+  .jawaban-table .col-kat  { width: 13%; }
+  .jawaban-table .col-soal { width: 47%; }
+  .jawaban-table .col-jwb  { width: 15%; }
+  .jawaban-table .col-status { width: 10%; text-align: center; }
+
+  .ket-table { width: 55%; }
+  .ket-table .col-no   { width: 12%; text-align: center; }
+  .ket-table .col-jwb  { width: 34%; }
+  .ket-table .col-status { width: 20%; text-align: center; }
+
+  .p-benar { color: #2a9d8f; font-weight: bold; }
+  .p-salah { color: #e63946; font-weight: bold; }
+  .p-skor-line { font-size: 11.5px; margin: 2px 0 8px; }
+
+  thead { display: table-header-group; }
+  tr { page-break-inside: avoid; break-inside: avoid; }
+  .section-title { page-break-after: avoid; break-after: avoid; }
+
+  .p-footer { margin-top: 20px; font-size: 9px; color: #6b7a99; text-align: right; }
+
+  @media print {
+    .p-skor-box div { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+  <div class="p-header">
+    <div class="company">PT. Sumatera Kemasindo</div>
+    <h1>Hasil Psikotes &amp; Assessment</h1>
+    <div class="p-sub">Nama: <b>${escapeHtml(row.nama || '-')}</b> &nbsp;·&nbsp; Posisi: ${escapeHtml(bd.posisi || '-')} &nbsp;·&nbsp; Submit: ${escapeHtml(row.waktu_submit || '-')}</div>
+  </div>
+
+  <div class="p-skor-box">
+    <div><div class="num">${row.skor ?? '-'} / ${row.total_soal ?? '-'}</div><div class="lbl">SKOR PSIKOTES</div></div>
+    <div><div class="num">${ket._skor ?? '-'} / ${ket._total ?? '-'}</div><div class="lbl">SKOR KETELITIAN</div></div>
+    <div><div class="num">${row.tab_switch ?? 0}x</div><div class="lbl">PINDAH TAB</div></div>
+  </div>
+
+  <div class="section-title">Biodata</div>
+  <div class="p-kv-grid">${bdRows}</div>
+
+  <div class="section-title">Buta Warna (Ishihara)</div>
+  <div class="p-kv-grid">${bwRows}</div>
+
+  <div class="section-title">Jawaban Psikotes</div>
+  <table class="jawaban-table">
+    <colgroup>
+      <col class="col-no"><col class="col-kat"><col class="col-soal"><col class="col-jwb"><col class="col-jwb"><col class="col-status">
+    </colgroup>
+    <thead>
+      <tr><th>No</th><th>Kategori</th><th>Soal</th><th>Jawaban Peserta</th><th>Kunci</th><th>Status</th></tr>
+    </thead>
+    <tbody>${jwRows}</tbody>
+  </table>
+
+  <div class="section-title">Tes Ketelitian</div>
+  <table class="ket-table">
+    <colgroup>
+      <col class="col-no"><col class="col-jwb"><col class="col-jwb"><col class="col-status">
+    </colgroup>
+    <thead>
+      <tr><th>No</th><th>Jawaban Peserta</th><th>Kunci</th><th>Status</th></tr>
+    </thead>
+    <tbody>${ketRows}</tbody>
+  </table>
+
+  <div class="p-footer">Dicetak: ${new Date().toLocaleString('id-ID')}</div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => { window.focus(); window.print(); }, 250);
+    });
+  <\/script>
+</body>
+</html>`;
+
+  const printWin = window.open('', '_blank');
+  if (!printWin) {
+    alert("Pop-up diblokir browser! Harap izinkan pop-up untuk situs ini agar lembar cetak dapat dibuka.");
+    return;
+  }
+  printWin.document.open();
+  printWin.document.write(html);
+  printWin.document.close();
+  setTimeout(() => {
+    try {
+      printWin.focus();
+      printWin.print();
+    } catch(e) {}
+  }, 400);
+}
+
+// ════════════════════════════════════════════════
+//  PRINT REKAPITULASI SEMUA PESERTA
+// ════════════════════════════════════════════════
+function printRekap() {
+  if (!allData.length) {
+    alert('Belum ada data peserta untuk dicetak.');
+    return;
+  }
+
+  const avgSkor = (allData.reduce((a, r) => a + (r.skor || 0), 0) / allData.length).toFixed(1);
+  const tabSwitchCount = allData.filter(r => (r.tab_switch || 0) > 0).length;
+
+  const tableRows = allData.map((row, idx) => {
+    const ketSkor = row.ketelitian && row.ketelitian._skor !== undefined
+      ? `${row.ketelitian._skor} / ${row.ketelitian._total}` : '-';
+    const posisi = row.biodata?.posisi || '-';
+    const isLulus = row.total_soal && (row.skor / row.total_soal) >= 0.6;
+    return `
+      <tr>
+        <td style="text-align:center;">${idx + 1}</td>
+        <td><b>${escapeHtml(row.nama || '-')}</b></td>
+        <td>${escapeHtml(posisi)}</td>
+        <td style="font-family:monospace; font-size:9.5px;">${escapeHtml(row.waktu_submit || '-')}</td>
+        <td style="text-align:center;"><b>${row.skor ?? '-'}</b> / ${row.total_soal ?? '-'}</td>
+        <td style="text-align:center;">${ketSkor}</td>
+        <td style="text-align:center; ${row.tab_switch > 0 ? 'color:#e63946; font-weight:bold;' : ''}">
+          ${row.tab_switch > 0 ? `${row.tab_switch}x` : '0'}
+        </td>
+        <td style="text-align:center; font-weight:bold; color:${isLulus ? '#2a9d8f' : '#e63946'};">
+          ${isLulus ? 'Lulus' : 'Di Bawah Standar'}
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  const html = `
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Rekapitulasi Hasil Psikotes - PT. Sumatera Kemasindo</title>
+<style>
+  @page { size: A4 landscape; margin: 12mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    color: #1a2744; font-size: 11px; margin: 0; line-height: 1.4;
+  }
+  .header {
+    border-bottom: 2px solid #1a2744;
+    padding-bottom: 8px; margin-bottom: 12px;
+    display: flex; justify-content: space-between; align-items: flex-end;
+  }
+  .header h1 { font-size: 16px; margin: 0 0 4px; font-weight: bold; }
+  .header .sub { font-size: 11px; color: #6b7a99; }
+  .stats-bar {
+    display: flex; gap: 12px; margin-bottom: 14px;
+  }
+  .stat-box {
+    border: 1px solid #dde3f0; border-radius: 6px; padding: 6px 12px;
+    background: #f8fafc; font-size: 10px;
+  }
+  .stat-box b { font-size: 13px; color: #1a2744; }
+  table {
+    width: 100%; border-collapse: collapse; font-size: 10px;
+  }
+  th, td {
+    border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left;
+  }
+  th {
+    background: #f1f5f9; text-transform: uppercase; font-size: 9px;
+    color: #475569; font-weight: bold;
+  }
+  tr:nth-child(even) { background: #fafbfd; }
+  .footer {
+    margin-top: 16px; font-size: 9px; color: #64748b;
+    display: flex; justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <div style="font-size:10px; font-weight:bold; color:#6b7a99; letter-spacing:0.5px;">PT. SUMATERA KEMASINDO</div>
+      <h1>Laporan Rekapitulasi Hasil Psikotes Online</h1>
+      <div class="sub">Total Peserta: ${allData.length} orang</div>
+    </div>
+    <div style="text-align:right; font-size:10px; color:#6b7a99;">
+      Dicetak: ${new Date().toLocaleString('id-ID')}
+    </div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-box">Total Peserta: <b>${allData.length}</b></div>
+    <div class="stat-box">Rata-rata Skor: <b>${avgSkor} / ${allData[0]?.total_soal || '-'}</b></div>
+    <div class="stat-box">Terdeteksi Pindah Tab (≥1x): <b>${tabSwitchCount} peserta</b></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:4%; text-align:center;">No</th>
+        <th style="width:20%;">Nama Lengkap</th>
+        <th style="width:16%;">Posisi Dilamar</th>
+        <th style="width:18%;">Waktu Pengerjaan</th>
+        <th style="width:12%; text-align:center;">Skor Psikotes</th>
+        <th style="width:12%; text-align:center;">Skor Ketelitian</th>
+        <th style="width:8%; text-align:center;">Pindah Tab</th>
+        <th style="width:10%; text-align:center;">Status</th>
+      </tr>
+    </thead>
+    <tbody>${tableRows}</tbody>
+  </table>
+
+  <div class="footer">
+    <span>Dokumen Rahasia — PT. Sumatera Kemasindo</span>
+    <span>Halaman Rekapitulasi</span>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => { window.focus(); window.print(); }, 250);
+    });
+  <\/script>
+</body>
+</html>`;
+
+  const printWin = window.open('', '_blank');
+  if (!printWin) {
+    alert("Pop-up diblokir browser! Harap izinkan pop-up untuk situs ini agar cetak bisa terbuka.");
+    return;
+  }
+  printWin.document.open();
+  printWin.document.write(html);
+  printWin.document.close();
+  setTimeout(() => {
+    try {
+      printWin.focus();
+      printWin.print();
+    } catch(e) {}
+  }, 400);
+}
+
+// ════════════════════════════════════════════════
+//  EXPORT KE EXCEL
+// ════════════════════════════════════════════════
+function exportExcel() {
+  if (!allData.length) { alert('Belum ada data untuk diexport.'); return; }
+
+  // Sheet 1: Ringkasan
+  const ringkasan = allData.map(row => ({
+    Nama: row.nama || '-',
+    'Waktu Submit': row.waktu_submit || '-',
+    'Skor Psikotes': row.skor ?? '-',
+    'Total Soal': row.total_soal ?? '-',
+    'Skor Ketelitian': row.ketelitian?._skor ?? '-',
+    'Total Ketelitian': row.ketelitian?._total ?? '-',
+    'Pindah Tab': row.tab_switch ?? 0,
+    Posisi: row.biodata?.posisi || '-',
+    'No. HP': row.biodata?.no_hp || '-',
+    Email: row.biodata?.email || '-',
+    Pendidikan: row.biodata?.pendidikan || '-',
+  }));
+
+  // Sheet 2: Detail Jawaban (per baris = 1 soal per peserta)
+  const detailJawaban = [];
+  allData.forEach(row => {
+    const jw = row.jawaban || {};
+    Object.values(jw).sort((a, b) => (a.no_urut || 0) - (b.no_urut || 0)).forEach(item => {
+      detailJawaban.push({
+        Nama: row.nama || '-',
+        No: item.no_urut,
+        Kategori: item.kategori,
+        Soal: item.soal,
+        'Jawaban Peserta': item.pilihan_user,
+        'Jawaban Benar': item.jawaban_benar,
+        Status: item.benar ? 'Benar' : 'Salah',
+      });
+    });
+  });
+
+  // Sheet 3: Biodata Lengkap
+  const biodataLengkap = allData.map(row => ({ Nama: row.nama || '-', ...row.biodata }));
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ringkasan), 'Ringkasan');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(detailJawaban), 'Detail Jawaban');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(biodataLengkap), 'Biodata');
+
+  const tanggal = new Date().toISOString().slice(0, 10);
+  XLSX.writeFile(wb, `Hasil_Psikotes_SK_${tanggal}.xlsx`);
+}
+</script>
+</body>
+</html>

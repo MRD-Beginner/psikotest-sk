@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<!-- This site is hosted on Netlify. Anyone can build and deploy a site
+     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=2b7403fb-37e8-4242-81b2-9dcad77239d1
+     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Psikotes Online — PT. Sumatera Kemasindo</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0f2f5;
+    --surface: #ffffff;
+    --primary: #1a2744;
+    --accent: #e63946;
+    --accent2: #2a9d8f;
+    --text: #1a2744;
+    --text-soft: #6b7a99;
+    --border: #dde3f0;
+    --timer-ok: #2a9d8f;
+    --timer-warn: #e9c46a;
+    --timer-danger: #e63946;
+    --radius: 16px;
+    --shadow: 0 4px 24px rgba(26,39,68,0.10);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; }
+  body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  /* ── LAYOUT ── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+  /* ── HEADER BRAND ── */
+  .brand {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .brand-logo {
+    width: 64px; height: 64px;
+    background: var(--primary);
+    border-radius: 18px;
+    display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: 12px;
+  }
+  .brand-logo svg { width: 36px; height: 36px; }
+  .brand h1 { font-size: 1.4rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; }
+  .brand p { font-size: 0.85rem; color: var(--text-soft); margin-top: 4px; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 16px;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  h2 { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+  .subtitle { font-size: 0.9rem; color: var(--text-soft); margin-bottom: 28px; line-height: 1.5; }
+
+  /* ── FORM ── */
+  label { font-size: 0.85rem; font-weight: 600; color: var(--text); display: block; margin-bottom: 8px; }
+  input[type="text"] {
+    width: 100%; padding: 14px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-family: inherit; font-size: 1rem;
+    color: var(--text); background: var(--bg);
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  input[type="text"]:focus { border-color: var(--primary); background: #fff; }
+  input[type="text"]::placeholder { color: var(--text-soft); }
+
+  /* ── BUTTON ── */
+  .btn {
+    display: block; width: 100%;
+    padding: 16px 24px;
+    background: var(--primary);
+    color: #fff;
+    border: none; border-radius: 12px;
+    font-family: inherit; font-size: 1rem; font-weight: 700;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: transform 0.15s, box-shadow 0.15s, background 0.15s;
+    letter-spacing: 0.2px;
+  }
+  .btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(26,39,68,0.18); }
+  .btn:active:not(:disabled) { transform: translateY(0); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn.secondary { background: var(--bg); color: var(--primary); border: 2px solid var(--border); }
+
+  /* ── INFO LIST ── */
+  .info-list { list-style: none; margin-bottom: 24px; }
+  .info-list li {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 0.88rem; color: var(--text); padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.5;
+  }
+  .info-list li:last-child { border-bottom: none; }
+  .info-list .icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap { margin-bottom: 24px; }
+  .progress-meta { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-soft); margin-bottom: 8px; }
+  .progress-bar { height: 6px; background: var(--bg); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--primary); border-radius: 99px; transition: width 0.4s ease; }
+
+  /* ── TIMER ── */
+  .timer-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .timer-ring {
+    position: relative; width: 52px; height: 52px; flex-shrink: 0;
+  }
+  .timer-ring svg { transform: rotate(-90deg); }
+  .timer-ring circle.bg { fill: none; stroke: var(--bg); stroke-width: 4; }
+  .timer-ring circle.fg {
+    fill: none; stroke: var(--timer-ok); stroke-width: 4;
+    stroke-linecap: round;
+    stroke-dasharray: 126;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1s linear, stroke 0.3s;
+  }
+  .timer-num {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace; font-size: 0.95rem; font-weight: 500;
+    color: var(--text);
+  }
+  .timer-label { font-size: 0.82rem; color: var(--text-soft); }
+
+  /* ── QUESTION ── */
+  .question-text {
+    font-size: 1.05rem; font-weight: 600; line-height: 1.6;
+    color: var(--primary); margin-bottom: 20px;
+    padding: 16px; background: var(--bg); border-radius: 12px;
+  }
+
+  /* ── ANSWER OPTIONS ── */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+    background: var(--bg);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-family: inherit; font-size: 0.95rem; font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #fff; }
+  .option-btn.selected {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #fff;
+  }
+  .option-btn:disabled { cursor: not-allowed; }
+  .option-letter {
+    width: 28px; height: 28px; flex-shrink: 0;
+    border-radius: 50%; border: 2px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 700;
+    font-family: 'DM Mono', monospace;
+  }
+  .option-btn.selected .option-letter { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.5); }
+
+  /* ── NEXT BTN ── */
+  .btn-next {
+    margin-top: 16px; padding: 14px 24px;
+    background: var(--accent2); color: #fff;
+    border: none; border-radius: 12px;
+    font-family: inherit; font-size: 0.95rem; font-weight: 700;
+    cursor: pointer; width: 100%;
+    transition: all 0.15s;
+    display: none;
+  }
+  .btn-next:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(42,157,143,0.3); }
+  .btn-next.visible { display: block; }
+  .btn-next:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ── WARNING OVERLAY ── */
+  .warning-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    background: rgba(230, 57, 70, 0.95);
+    align-items: center; justify-content: center; flex-direction: column;
+    text-align: center; padding: 32px;
+    backdrop-filter: blur(4px);
+  }
+  .warning-overlay.show { display: flex; }
+  .warning-overlay .warn-icon { font-size: 4rem; margin-bottom: 16px; }
+  .warning-overlay h2 { color: #fff; font-size: 1.6rem; margin-bottom: 12px; }
+  .warning-overlay p { color: rgba(255,255,255,0.9); font-size: 1rem; line-height: 1.6; margin-bottom: 24px; }
+  .warning-overlay .warn-count { font-family: 'DM Mono', monospace; font-size: 1.1rem; background: rgba(0,0,0,0.2); color: #fff; padding: 6px 16px; border-radius: 8px; margin-bottom: 20px; }
+  .warn-close { padding: 14px 32px; background: #fff; color: var(--accent); font-family: inherit; font-weight: 700; font-size: 1rem; border: none; border-radius: 12px; cursor: pointer; }
+
+  /* ── THANK YOU SCREEN ── */
+  #screen-done { background: var(--primary); }
+  .done-card { text-align: center; padding: 48px 32px; max-width: 440px; }
+  .done-icon { font-size: 4rem; margin-bottom: 20px; }
+  .done-card h2 { color: #fff; font-size: 2rem; margin-bottom: 12px; }
+  .done-card p { color: rgba(255,255,255,0.75); line-height: 1.7; font-size: 0.95rem; }
+  .done-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.9);
+    padding: 8px 20px; border-radius: 99px;
+    font-size: 0.85rem; margin-top: 24px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── SOAL NUMBER ── */
+  .soal-number {
+    font-size: 0.75rem; font-weight: 700; color: var(--text-soft);
+    text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  /* ── LOADING ── */
+  .sending-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9998;
+    background: rgba(240,242,245,0.92);
+    align-items: center; justify-content: center; flex-direction: column;
+    gap: 16px;
+    backdrop-filter: blur(4px);
+  }
+  .sending-overlay.show { display: flex; }
+  .spinner { width: 40px; height: 40px; border: 4px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .sending-overlay p { font-size: 0.95rem; color: var(--text-soft); }
+
+  /* ── BIODATA ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
+  .form-grid .full { grid-column: 1 / -1; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 0.8rem; font-weight: 600; color: var(--text); margin-bottom: 0; }
+  .form-group input, .form-group select, .form-group textarea {
+    padding: 11px 13px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-family: inherit; font-size: 0.9rem;
+    color: var(--text); background: var(--bg);
+    transition: border-color 0.2s;
+    outline: none;
+    width: 100%;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); background: #fff; }
+  .form-group select { cursor: pointer; }
+  .form-group textarea { resize: none; min-height: 70px; line-height: 1.5; }
+  .form-group input::placeholder, .form-group textarea::placeholder { color: var(--text-soft); }
+  .form-section-title {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 1.2px;
+    text-transform: uppercase; color: var(--text-soft);
+    margin: 18px 0 10px; padding-bottom: 6px;
+    border-bottom: 2px solid var(--border);
+    grid-column: 1 / -1;
+  }
+  .form-section-title:first-child { margin-top: 0; }
+  .radio-group { display: flex; gap: 10px; flex-wrap: wrap; }
+  .radio-item {
+    display: flex; align-items: center; gap: 6px;
+    padding: 9px 14px;
+    border: 2px solid var(--border); border-radius: 8px;
+    cursor: pointer; font-size: 0.88rem; font-weight: 500;
+    background: var(--bg); color: var(--text);
+    transition: all 0.15s; user-select: none;
+  }
+  .radio-item input[type=radio] { display: none; }
+  .radio-item.checked { border-color: var(--primary); background: var(--primary); color: #fff; }
+  .biodata-card { max-width: 640px; max-height: 85vh; overflow-y: auto; padding-right: 4px; }
+  .biodata-card::-webkit-scrollbar { width: 4px; }
+  .biodata-card::-webkit-scrollbar-track { background: var(--bg); border-radius: 4px; }
+  .biodata-card::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  /* ── BUTA WARNA / ISHIHARA ── */
+  .ishihara-card { max-width: 560px; }
+  .plate-wrap { text-align: center; margin-bottom: 20px; }
+  .plate-img {
+    width: 220px; height: 220px; border-radius: 50%;
+    border: 3px solid var(--border);
+    object-fit: cover; display: block; margin: 0 auto 16px;
+    background: var(--bg);
+    overflow: hidden; position: relative;
+  }
+  .plate-canvas { width: 220px; height: 220px; border-radius: 50%; display: block; margin: 0 auto 16px; }
+  .plate-answer-input {
+    width: 100%; padding: 13px 16px;
+    border: 2px solid var(--border); border-radius: 10px;
+    font-family: inherit; font-size: 1.1rem; font-weight: 600;
+    text-align: center; color: var(--text); background: var(--bg);
+    outline: none; transition: border-color 0.2s;
+    letter-spacing: 2px;
+  }
+  .plate-answer-input:focus { border-color: var(--primary); background: #fff; }
+  .plate-answer-input::placeholder { color: var(--text-soft); font-size: 0.9rem; font-weight: 400; letter-spacing: 0; }
+  .plate-nav { display: flex; gap: 12px; margin-top: 16px; }
+  .plate-nav .btn-next { margin-top: 0; flex: 1; }
+  .ishihara-progress { font-size: 0.8rem; color: var(--text-soft); margin-bottom: 4px; }
+  .plate-subtitle { font-size: 0.85rem; color: var(--text-soft); margin-bottom: 14px; }
+
+
+  /* ── TES KETELITIAN ── */
+  .ketelitian-card { max-width: 720px; width: calc(100% - 32px); }
+  .ket-timer-bar {
+    height: 10px; background: var(--bg); border-radius: 99px; overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .ket-timer-fill {
+    height: 100%; background: var(--timer-ok); border-radius: 99px;
+    transition: width 1s linear, background 0.3s;
+  }
+  .ket-timer-label { font-size: 0.82rem; color: var(--text-soft); margin-bottom: 20px; }
+  .ket-table-wrap { overflow-x: auto; margin-bottom: 20px; }
+  .ket-table {
+    width: 100%; border-collapse: collapse;
+    font-family: 'DM Mono', monospace; font-size: 0.9rem;
+  }
+  .ket-table th {
+    background: var(--primary); color: #fff;
+    padding: 8px 12px; text-align: center; font-size: 0.78rem;
+    font-weight: 700; letter-spacing: 0.5px;
+  }
+  .ket-table td {
+    padding: 10px 14px; border: 1px solid var(--border);
+    text-align: center; vertical-align: top;
+    line-height: 1.9; letter-spacing: 1px; font-size: 0.88rem;
+  }
+  .ket-table tr:nth-child(even) td { background: #f8f9fc; }
+  .ket-table td.no-col { font-weight: 700; color: var(--text-soft); background: #f0f2f8; }
+  .ket-diff-input {
+    width: 100%; border: 2px solid var(--border); border-radius: 8px;
+    padding: 8px 10px; font-family: 'DM Mono', monospace;
+    font-size: 0.88rem; color: var(--text); background: var(--bg);
+    outline: none; transition: border-color 0.2s; text-align: center;
+    letter-spacing: 1px;
+  }
+  .ket-diff-input:focus { border-color: var(--primary); background: #fff; }
+  .ket-diff-input::placeholder { color: var(--text-soft); font-size: 0.78rem; letter-spacing: 0; }
+  .ket-answer-col { min-width: 160px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 480px) {
+    .card { padding: 28px 20px; }
+    h2 { font-size: 1.3rem; }
+    .question-text { font-size: 0.98rem; }
+    .option-btn { font-size: 0.9rem; padding: 12px 14px; }
+    .form-grid { grid-template-columns: 1fr; }
+    .form-grid .full { grid-column: 1; }
+    .biodata-card { max-height: 90vh; }
+    .plate-canvas { width: 180px; height: 180px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN 1: WELCOME / NAMA
+═══════════════════════════════════════════════ -->
+<div id="screen-welcome" class="screen">
+  <div class="brand">
+    <div class="brand-logo">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="4" width="13" height="13" rx="3" fill="white"/>
+        <rect x="19" y="4" width="13" height="13" rx="3" fill="rgba(255,255,255,0.5)"/>
+        <rect x="4" y="19" width="13" height="13" rx="3" fill="rgba(255,255,255,0.5)"/>
+        <rect x="19" y="19" width="13" height="13" rx="3" fill="white"/>
+      </svg>
+    </div>
+    <h1>PT. Sumatera Kemasindo</h1>
+    <p>Tes Psikologi Online</p>
+  </div>
+  <div class="card">
+    <h2>Selamat Datang</h2>
+    <p class="subtitle">Masukkan nama lengkap Anda untuk memulai tes. Pastikan nama sesuai dengan dokumen resmi.</p>
+    <label for="input-nama">Nama Lengkap</label>
+    <input type="text" id="input-nama" placeholder="Contoh: Budi Santoso" autocomplete="off" spellcheck="false">
+    <button class="btn" id="btn-lanjut-info" onclick="goToInfo()">Lanjut →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN 2: INFO / PETUNJUK
+═══════════════════════════════════════════════ -->
+<div id="screen-info" class="screen">
+  <div class="card">
+    <h2>Petunjuk Tes</h2>
+    <p class="subtitle">Baca petunjuk berikut sebelum memulai tes.</p>
+    <ul class="info-list">
+      <li><span class="icon">📋</span><span>Terdapat <strong id="info-total-soal">—</strong> soal pilihan ganda yang harus dijawab.</span></li>
+      <li><span class="icon">⏱️</span><span>Setiap soal memiliki waktu <strong>1 menit (60 detik)</strong>. Soal otomatis lanjut jika waktu habis.</span></li>
+      <li><span class="icon">🔀</span><span>Urutan soal dan pilihan jawaban diacak secara otomatis.</span></li>
+      <li><span class="icon">⛔</span><span>Anda <strong>tidak dapat kembali</strong> ke soal sebelumnya.</span></li>
+      <li><span class="icon">👁️</span><span>Berpindah tab/jendela browser akan dicatat dan dilaporkan.</span></li>
+      <li><span class="icon">📵</span><span>Klik kanan dan salin-tempel dinonaktifkan selama tes.</span></li>
+      <li><span class="icon">📤</span><span>Hasil tes akan dikirim otomatis ke panitia setelah selesai.</span></li>
+    </ul>
+    <button class="btn" onclick="showScreen('screen-biodata')">Lanjut Isi Biodata →</button>
+    <button class="btn secondary" onclick="showScreen('screen-welcome')" style="margin-top:10px">← Kembali</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN 2B: BIODATA
+═══════════════════════════════════════════════ -->
+<div id="screen-biodata" class="screen">
+  <div class="card biodata-card">
+    <h2>Data Diri Pelamar</h2>
+    <p class="subtitle">Lengkapi biodata berikut dengan benar sesuai dokumen resmi Anda.</p>
+
+    <div class="form-grid">
+      <!-- IDENTITAS DIRI -->
+      <div class="form-section-title">I. Identitas Diri</div>
+
+      <div class="form-group full">
+        <label>Posisi yang Dilamar *</label>
+        <select id="bd-posisi">
+          <option value="">— Pilih Posisi —</option>
+          <option>Marketing</option><option>Sales</option><option>Design</option>
+          <option>Produksi</option><option>Borongan</option><option>Administrasi</option>
+          <option>PPIC</option><option>Gudang Paper</option><option>Gudang Tinta</option>
+          <option>Gudang Pallet</option><option>Accounting / Finance</option>
+          <option>Gudang Umum</option><option>Mounting</option>
+          <option>Quality Control</option><option>Quality Control Lab</option>
+          <option>Ekspedisi</option><option>Operator Forklift</option>
+          <option>Security</option><option>Pengawas Lapangan</option><option>Supir</option>
+        </select>
+      </div>
+
+      <div class="form-group full">
+        <label>Nama Lengkap *</label>
+        <input type="text" id="bd-nama" placeholder="Sesuai KTP" readonly>
+      </div>
+
+      <div class="form-group">
+        <label>Nama Panggilan</label>
+        <input type="text" id="bd-panggilan" placeholder="Nama panggilan">
+      </div>
+
+      <div class="form-group">
+        <label>Nomor KTP *</label>
+        <input type="text" id="bd-ktp" placeholder="16 digit NIK" maxlength="16">
+      </div>
+
+      <div class="form-group">
+        <label>Tempat Lahir *</label>
+        <input type="text" id="bd-tmp-lahir" placeholder="Kota kelahiran">
+      </div>
+
+      <div class="form-group">
+        <label>Tanggal Lahir *</label>
+        <input type="date" id="bd-tgl-lahir">
+      </div>
+
+      <div class="form-group full">
+        <label>Jenis Kelamin *</label>
+        <div class="radio-group" id="rg-jk">
+          <label class="radio-item" onclick="radioSelect('rg-jk','Laki-laki',this)"><input type="radio" name="jk" value="Laki-laki"> Laki-laki</label>
+          <label class="radio-item" onclick="radioSelect('rg-jk','Perempuan',this)"><input type="radio" name="jk" value="Perempuan"> Perempuan</label>
+        </div>
+      </div>
+
+      <div class="form-group full">
+        <label>Status Pernikahan *</label>
+        <div class="radio-group" id="rg-status">
+          <label class="radio-item" onclick="radioSelect('rg-status','Belum Kawin',this)"><input type="radio" name="status"> Belum Kawin</label>
+          <label class="radio-item" onclick="radioSelect('rg-status','Kawin',this)"><input type="radio" name="status"> Kawin</label>
+          <label class="radio-item" onclick="radioSelect('rg-status','Janda',this)"><input type="radio" name="status"> Janda</label>
+          <label class="radio-item" onclick="radioSelect('rg-status','Duda',this)"><input type="radio" name="status"> Duda</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Agama *</label>
+        <select id="bd-agama">
+          <option value="">— Pilih —</option>
+          <option>Islam</option><option>Kristen Protestan</option><option>Kristen Katolik</option>
+          <option>Hindu</option><option>Buddha</option><option>Konghucu</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Suku</label>
+        <input type="text" id="bd-suku" placeholder="Contoh: Jawa, Sunda...">
+      </div>
+
+      <div class="form-group">
+        <label>Golongan Darah</label>
+        <select id="bd-gol-darah">
+          <option value="">— Pilih —</option>
+          <option>A</option><option>B</option><option>AB</option><option>O</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Nomor HP *</label>
+        <input type="text" id="bd-hp" placeholder="08xxxxxxxxxx">
+      </div>
+
+      <div class="form-group">
+        <label>Tinggi Badan (cm)</label>
+        <input type="number" id="bd-tinggi" placeholder="Contoh: 170" min="100" max="250">
+      </div>
+
+      <div class="form-group">
+        <label>Berat Badan (kg)</label>
+        <input type="number" id="bd-berat" placeholder="Contoh: 65" min="30" max="200">
+      </div>
+
+      <div class="form-group full">
+        <label>Email</label>
+        <input type="email" id="bd-email" placeholder="contoh@email.com">
+      </div>
+
+      <div class="form-group full">
+        <label>Alamat Lengkap *</label>
+        <textarea id="bd-alamat" placeholder="Jl. ..., RT/RW, Kelurahan, Kecamatan, Kota" rows="2"></textarea>
+      </div>
+
+      <div class="form-group full">
+        <label>Status Tempat Tinggal</label>
+        <div class="radio-group" id="rg-tinggal">
+          <label class="radio-item" onclick="radioSelect('rg-tinggal','Kost',this)"><input type="radio" name="tinggal"> Kost</label>
+          <label class="radio-item" onclick="radioSelect('rg-tinggal','Rumah Sendiri',this)"><input type="radio" name="tinggal"> Rumah Sendiri</label>
+          <label class="radio-item" onclick="radioSelect('rg-tinggal','Rumah Orang Tua',this)"><input type="radio" name="tinggal"> Rumah Orang Tua</label>
+          <label class="radio-item" onclick="radioSelect('rg-tinggal','Lain-lain',this)"><input type="radio" name="tinggal"> Lain-lain</label>
+        </div>
+      </div>
+
+      <!-- PENDIDIKAN -->
+      <div class="form-section-title">II. Pendidikan Terakhir</div>
+
+      <div class="form-group">
+        <label>Jenjang Pendidikan *</label>
+        <select id="bd-pendidikan">
+          <option value="">— Pilih —</option>
+          <option>SD</option><option>SMP</option><option>SMA/SMK</option>
+          <option>D1</option><option>D2</option><option>D3</option>
+          <option>S1</option><option>S2</option><option>S3</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Jurusan</label>
+        <input type="text" id="bd-jurusan" placeholder="Contoh: Teknik Mesin">
+      </div>
+
+      <div class="form-group full">
+        <label>Nama Sekolah / Perguruan Tinggi</label>
+        <input type="text" id="bd-sekolah" placeholder="Nama institusi pendidikan">
+      </div>
+
+      <div class="form-group">
+        <label>Tahun Masuk</label>
+        <input type="number" id="bd-thn-masuk" placeholder="YYYY" min="1980" max="2025">
+      </div>
+
+      <div class="form-group">
+        <label>Tahun Lulus</label>
+        <input type="number" id="bd-thn-lulus" placeholder="YYYY" min="1980" max="2030">
+      </div>
+
+      <!-- PENGALAMAN KERJA -->
+      <div class="form-section-title">III. Pengalaman Kerja Terakhir</div>
+
+      <div class="form-group full">
+        <label>Nama Perusahaan</label>
+        <input type="text" id="bd-perusahaan" placeholder="Nama perusahaan terakhir (kosongkan jika Fresh Graduate)">
+      </div>
+
+      <div class="form-group">
+        <label>Jabatan</label>
+        <input type="text" id="bd-jabatan" placeholder="Posisi/jabatan">
+      </div>
+
+      <div class="form-group">
+        <label>Alasan Keluar</label>
+        <input type="text" id="bd-alasan" placeholder="Alasan meninggalkan pekerjaan">
+      </div>
+
+      <div class="form-group">
+        <label>Masa Kerja — Mulai</label>
+        <input type="month" id="bd-kerja-mulai">
+      </div>
+
+      <div class="form-group">
+        <label>Masa Kerja — Sampai</label>
+        <input type="month" id="bd-kerja-sampai">
+      </div>
+    </div>
+
+    <button class="btn" id="btn-lanjut-biodata" onclick="submitBiodata()" style="margin-top:24px">Lanjut ke Tes →</button>
+    <button class="btn secondary" onclick="showScreen('screen-info')" style="margin-top:10px">← Kembali</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN 2C: TES BUTA WARNA (ISHIHARA)
+═══════════════════════════════════════════════ -->
+<div id="screen-ishihara" class="screen">
+  <div class="card ishihara-card">
+    <h2>Tes Buta Warna</h2>
+    <p class="subtitle">Lihat gambar di bawah dan ketik angka/warna yang Anda lihat. Jawab sesuai yang Anda lihat sejujurnya.</p>
+
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span class="ishihara-progress" id="ish-progress-label">Plate 1 dari 38</span>
+        <span style="font-size:0.8rem;color:var(--text-soft)" id="ish-nama-label"></span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="ish-progress-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="plate-wrap">
+      <canvas id="ish-canvas" width="220" height="220" class="plate-canvas"></canvas>
+      <p class="plate-subtitle" id="ish-plate-label">Plate 1 — <em>Angka yang terlihat:</em></p>
+      <input type="text" class="plate-answer-input" id="ish-answer" placeholder="Ketik angka / warna yang terlihat" maxlength="20" autocomplete="off">
+    </div>
+
+    <div class="plate-nav">
+      <button class="btn-next visible" id="ish-btn-next" onclick="ishiharaNext()">Plate Berikutnya →</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="screen-soal" class="screen">
+  <div class="card" style="max-width:540px">
+    <!-- Progress -->
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="progress-label">Soal 1 dari 15</span>
+        <span id="nama-label" style="font-weight:600;color:var(--primary)"></span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+    <!-- Timer + soal info -->
+    <div class="timer-wrap">
+      <div class="timer-ring">
+        <svg width="52" height="52" viewBox="0 0 52 52">
+          <circle class="bg" cx="26" cy="26" r="20"/>
+          <circle class="fg" id="timer-circle" cx="26" cy="26" r="20"/>
+        </svg>
+        <div class="timer-num" id="timer-num">20</div>
+      </div>
+      <div>
+        <div style="font-size:0.82rem;font-weight:700;color:var(--primary)" id="soal-kategori">Logika Verbal</div>
+        <div class="timer-label">Detik tersisa</div>
+      </div>
+    </div>
+    <!-- Question -->
+    <div class="soal-number" id="soal-number">SOAL 1</div>
+    <div class="question-text" id="question-text"></div>
+    <!-- Options -->
+    <div class="options" id="options-container"></div>
+    <!-- Next button -->
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">Soal Berikutnya →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN INTRO KETELITIAN
+═══════════════════════════════════════════════ -->
+<div id="screen-ketelitian-intro" class="screen">
+  <div class="card" style="max-width:560px">
+    <h2>Tes Ketelitian</h2>
+    <p class="subtitle">Baca petunjuk dan contoh berikut sebelum memulai. Anda hanya punya <strong>1 menit</strong> untuk menyelesaikan semua soal.</p>
+
+    <ul class="info-list">
+      <li><span class="icon">🔍</span><span>Bandingkan angka di <strong>Kolom A</strong> dan <strong>Kolom B</strong> pada setiap baris.</span></li>
+      <li><span class="icon">✏️</span><span>Pada kolom <strong>"Posisi Berbeda"</strong>, tuliskan <strong>nomor urut posisi</strong> angka yang berbeda, pisahkan dengan koma jika lebih dari satu.</span></li>
+      <li><span class="icon">⏱️</span><span>Waktu total <strong>15 menit</strong> untuk semua soal (1 menit per soal). Jawab sebanyak mungkin dalam waktu yang tersedia.</span></li>
+      <li><span class="icon">⛔</span><span>Jika waktu habis, jawaban yang sudah terisi akan <strong>otomatis tersimpan</strong>.</span></li>
+    </ul>
+
+    <!-- CONTOH -->
+    <div style="background:var(--bg);border-radius:12px;padding:16px 18px;margin-bottom:20px;">
+      <div style="font-size:0.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-soft);margin-bottom:12px;">📌 Contoh Cara Mengisi</div>
+
+      <div style="overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:0.85rem;">
+          <thead>
+            <tr>
+              <th style="background:var(--primary);color:#fff;padding:7px 10px;text-align:center;font-size:0.75rem;border-radius:6px 0 0 0">No</th>
+              <th style="background:var(--primary);color:#fff;padding:7px 10px;text-align:center;font-size:0.75rem;">Kolom A</th>
+              <th style="background:var(--primary);color:#fff;padding:7px 10px;text-align:center;font-size:0.75rem;">Kolom B</th>
+              <th style="background:var(--primary);color:#fff;padding:7px 10px;text-align:center;font-size:0.75rem;border-radius:0 6px 0 0">Posisi Berbeda</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:8px 10px;border:1px solid var(--border);text-align:center;font-weight:700;color:var(--text-soft)">C</td>
+              <td style="padding:8px 10px;border:1px solid var(--border);letter-spacing:3px">1 2 3 3 2 2 3 8 4 5</td>
+              <td style="padding:8px 10px;border:1px solid var(--border);letter-spacing:3px">1 2 <span style="color:var(--accent);font-weight:700">7</span> 3 <span style="color:var(--accent);font-weight:700">8</span> 2 <span style="color:var(--accent);font-weight:700">9</span> 3 8 5</td>
+              <td style="padding:8px 10px;border:1px solid var(--border);text-align:center;">
+                <span style="background:var(--accent2);color:#fff;border-radius:6px;padding:3px 10px;font-weight:700;font-size:0.82rem;">3, 5, 7</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="margin-top:12px;font-size:0.82rem;color:var(--text-soft);line-height:1.7;">
+        Pada contoh di atas, angka yang berbeda antara Kolom A dan B ada di posisi ke-<strong>3</strong> (3→7), ke-<strong>5</strong> (2→8), dan ke-<strong>7</strong> (3→9).<br>
+        Maka jawabannya ditulis: <strong style="color:var(--primary)">3, 5, 7</strong>
+      </div>
+    </div>
+
+    <button class="btn" onclick="mulaiKetelitian()">Saya Mengerti, Mulai Tes Ketelitian ⏱️</button>
+    <p style="text-align:center;font-size:0.78rem;color:var(--accent);margin-top:12px;font-weight:600;">⚠️ Timer langsung berjalan saat tombol di atas diklik!</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN KETELITIAN (SOAL)
+═══════════════════════════════════════════════ -->
+<div id="screen-ketelitian" class="screen">
+  <div class="card ketelitian-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <h2 style="margin:0">Tes Ketelitian</h2>
+      <div style="text-align:right">
+        <div style="font-family:'DM Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--accent)" id="ket-timer-num">15:00</div>
+        <div style="font-size:0.72rem;color:var(--text-soft)">menit tersisa</div>
+      </div>
+    </div>
+
+    <!-- Timer bar -->
+    <div class="ket-timer-bar" style="margin-bottom:16px;">
+      <div class="ket-timer-fill" id="ket-timer-fill" style="width:100%"></div>
+    </div>
+
+    <p style="font-size:0.82rem;color:var(--text-soft);margin-bottom:14px;">
+      Tuliskan <strong>posisi angka yang berbeda</strong> antara Kolom A dan B (pisahkan dengan koma). Contoh: <strong>3, 5, 7</strong>
+    </p>
+
+    <div class="ket-table-wrap">
+      <table class="ket-table" id="ket-table">
+        <thead>
+          <tr>
+            <th style="width:42px">No</th>
+            <th>Kolom A</th>
+            <th>Kolom B</th>
+            <th class="ket-answer-col">Posisi Berbeda</th>
+          </tr>
+        </thead>
+        <tbody id="ket-tbody"></tbody>
+      </table>
+    </div>
+
+    <button class="btn" id="ket-submit-btn" onclick="submitKetelitian()">Selesai & Kirim Semua Hasil →</button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN 4: TERIMA KASIH
+═══════════════════════════════════════════════ -->
+<div id="screen-done" class="screen">
+  <div class="done-card">
+    <div class="done-icon">✅</div>
+    <h2>Terima Kasih!</h2>
+    <p>Tes telah selesai dan jawaban Anda berhasil dikirimkan kepada panitia.<br><br>
+    Harap tunggu pengumuman hasil seleksi dari PT. Sumatera Kemasindo. Semoga sukses!</p>
+    <div class="done-badge" id="done-badge">
+      <span>🕐</span> <span id="done-time">—</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     WARNING OVERLAY (Tab Switch)
+═══════════════════════════════════════════════ -->
+<div class="warning-overlay" id="warning-overlay">
+  <div class="warn-icon">⚠️</div>
+  <h2>Peringatan!</h2>
+  <p>Anda terdeteksi berpindah tab atau meminimalkan browser.<br>Tindakan ini telah <strong>dicatat</strong> dan dilaporkan ke panitia.</p>
+  <div class="warn-count" id="warn-count">Jumlah pelanggaran: 1</div>
+  <button class="warn-close" onclick="closeWarning()">Saya Mengerti, Lanjutkan Tes</button>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SENDING OVERLAY
+═══════════════════════════════════════════════ -->
+<div class="sending-overlay" id="sending-overlay">
+  <div class="spinner" id="sending-spinner"></div>
+  <p id="sending-text">Mengirim data ke database...</p>
+  <div id="sending-error-actions" style="display:none; text-align:center; max-width:380px; padding:0 16px;">
+    <div style="font-size:2.2rem; margin-bottom:8px;">⚠️</div>
+    <h3 style="color:var(--primary); font-size:1.15rem; margin-bottom:6px;">Gagal Mengirim ke Database</h3>
+    <p id="sending-error-msg" style="color:var(--text-soft); font-size:0.85rem; margin-bottom:18px; line-height:1.45;"></p>
+    <button class="btn" style="margin-top:0; padding:12px 20px; font-size:0.92rem;" onclick="kirimSemuaData()">🔄 Coba Kirim Ulang</button>
+    <button class="btn secondary" style="margin-top:10px; padding:12px 20px; font-size:0.9rem;" onclick="unduhDataBackup()">💾 Unduh Salinan Jawaban (.json)</button>
+    <button class="btn secondary" style="margin-top:10px; padding:8px 16px; font-size:0.82rem; border:none; background:transparent;" onclick="lewatiDanSelesai()">Lewati dan Lanjutkan Selesai →</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+//  CONFIG
+// ════════════════════════════════════════════════
+const SUPABASE_URL = "https://bhrkpavpodyceqflbalf.supabase.co";
+const SUPABASE_KEY = "sb_publishable_6H_HEq-ZS0kM5XqgsTOOgw_NcmCAQ2K";
+const SUPABASE_TABLE = "psikotes_hasil";
+const WAKTU_PER_SOAL = 60; // detik
+
+// ════════════════════════════════════════════════
+//  DATA SOAL
+// ════════════════════════════════════════════════
+const semuaSoal = [
+  // 1. Lawan kata
+  {
+    id: "q1",
+    kategori: "Logika Verbal",
+    soal: "Lawan kata dari 'ALPHA' adalah...",
+    opsi: ["Absen", "Lalai", "Hadir", "Lambat", "Bolos"],
+    jawaban_benar: "C", // Hadir (lawan dari Alpha/hadir adalah absen, tapi di soal yang dimaksud adalah Hadir sebagai lawan Alpha → pilih sesuai konteks tes)
+  },
+  // 2. Analogi
+  {
+    id: "q2",
+    kategori: "Analogi",
+    soal: "... : Wisuda = Pertunangan : ...",
+    opsi: ["Toga - Cincin", "Gelar - Pelaminan", "Berhasil - Cinta", "Kuliah - Pernikahan", "Pendidikan - Cinta"],
+    jawaban_benar: "A", // Toga - Cincin
+  },
+  // 3. Logika Numerik - Pengrajin
+  {
+    id: "q3",
+    kategori: "Logika Numerik",
+    soal: "Seorang pengrajin sepatu membuat 80 pasang sepatu dalam 23 hari. Jika pengrajin tersebut bekerja selama 30 hari, berapa pasang sepatu yang akan dibuat?",
+    opsi: ["94 pasang", "104 pasang", "110 pasang", "115 pasang", "120 pasang"],
+    jawaban_benar: "B", // 80/23 × 30 ≈ 104
+  },
+  // 4. Deret angka
+  {
+    id: "q4",
+    kategori: "Deret Angka",
+    soal: "Temukan pola dan lengkapi deret berikut: 4, 7, 10, ?, 16, ?, ?",
+    opsi: ["11, 15, 19", "12, 14, 17", "13, 19, 22", "15, 20, 24", "13, 16, 19"],
+    jawaban_benar: "E", // +3 setiap suku: 4,7,10,13,16,19,22 → 13,19,22
+  },
+  // 5. Silogisme
+  {
+    id: "q5",
+    kategori: "Silogisme",
+    soal: "Nana dan Nini suka makan siomay. Ujang dan Nana suka makan es dawet. Siapa yang suka makan siomay DAN es dawet?",
+    opsi: ["Ujang", "Nini", "Nana", "Nana dan Nini", "Ujang dan Nini"],
+    jawaban_benar: "C",
+  },
+  // 6. Hitung — rumus kurung
+  {
+    id: "q6",
+    kategori: "Berhitung",
+    soal: "Berapakah hasil dari: ((75 + 15) × (25 − 15)) ÷ 3 ?",
+    opsi: ["250", "300", "275", "320", "400"],
+    jawaban_benar: "B", // (90×10)/3 = 900/3 = 300
+  },
+  // 7. Hitung — rantai
+  {
+    id: "q7",
+    kategori: "Berhitung",
+    soal: "Berapakah hasil dari: 1000 × 10 ÷ 1000 − 1 ?",
+    opsi: ["5", "9", "10", "0", "100"],
+    jawaban_benar: "B", // 10000/1000 - 1 = 10 - 1 = 9
+  },
+  // 8. Desimal
+  {
+    id: "q8",
+    kategori: "Berhitung",
+    soal: "Berapakah hasil dari: 6,7 × 15 ?",
+    opsi: ["95,5", "100,5", "98,5", "102,0", "100,0"],
+    jawaban_benar: "B", // 6.7 × 15 = 100.5
+  },
+  // 9. Akar
+  {
+    id: "q9",
+    kategori: "Berhitung",
+    soal: "Berapakah hasil dari: √100 × 4 ÷ 5 ?",
+    opsi: ["6", "7", "8", "9", "10"],
+    jawaban_benar: "C", // √100=10, 10×4=40, 40÷5=8
+  },
+  // 10. Pangkat
+  {
+    id: "q10",
+    kategori: "Berhitung",
+    soal: "Berapakah hasil dari: 12³ (12 pangkat 3)?",
+    opsi: ["1.444", "1.728", "1.200", "1.596", "2.000"],
+    jawaban_benar: "B", // 12×12×12=1728
+  },
+  // 11. Konversi satuan km → mm
+  {
+    id: "q11",
+    kategori: "Konversi Satuan",
+    soal: "5 km = ... mm?",
+    opsi: ["500.000 mm", "5.000.000 mm", "50.000 mm", "500 mm", "5.000 mm"],
+    jawaban_benar: "B", // 5×1.000.000 = 5.000.000
+  },
+  // 12. Konversi satuan m² → cm²
+  {
+    id: "q12",
+    kategori: "Konversi Satuan",
+    soal: "9 m² = ... cm²?",
+    opsi: ["900 cm²", "9.000 cm²", "90.000 cm²", "900.000 cm²", "9.000.000 cm²"],
+    jawaban_benar: "C", // 9 × 10.000 = 90.000
+  },
+  // 13. Persentase
+  {
+    id: "q13",
+    kategori: "Berhitung",
+    soal: "Berapakah 20% dari 2.000?",
+    opsi: ["200", "300", "400", "500", "600"],
+    jawaban_benar: "C", // 0.2 × 2000 = 400
+  },
+  // 14. Konversi waktu
+  {
+    id: "q14",
+    kategori: "Konversi Waktu",
+    soal: "15 jam 43 menit = ... detik?",
+    opsi: ["54.000 detik", "56.580 detik", "56.800 detik", "55.380 detik", "57.180 detik"],
+    jawaban_benar: "B", // (15×3600)+(43×60) = 54000+2580 = 56580
+  },
+  // 15. Pecahan
+  {
+    id: "q15",
+    kategori: "Berhitung",
+    soal: "Berapakah hasil dari: 144 ÷ 12² (144 dibagi 12 kuadrat)?",
+    opsi: ["0,5", "1", "1,5", "2", "2,5"],
+    jawaban_benar: "B", // 144 ÷ 144 = 1
+  },
+];
+
+// Langsung tampilkan halaman welcome
+document.getElementById('screen-welcome').classList.add('active');
+
+
+
+let ishiharaJawaban = {};
+let ishiharaIndex = 0;
+let biodataPayload = {};
+let pesertaNama = "";
+
+// ════════════════════════════════════════════════
+//  BIODATA HELPERS
+// ════════════════════════════════════════════════
+function radioSelect(groupId, val, el) {
+  document.querySelectorAll(`#${groupId} .radio-item`).forEach(r => r.classList.remove('checked'));
+  el.classList.add('checked');
+  el.querySelector('input').checked = true;
+}
+
+function submitBiodata() {
+  const required = [
+    { id: 'bd-posisi', label: 'Posisi yang Dilamar' },
+    { id: 'bd-ktp', label: 'Nomor KTP' },
+    { id: 'bd-tmp-lahir', label: 'Tempat Lahir' },
+    { id: 'bd-tgl-lahir', label: 'Tanggal Lahir' },
+    { id: 'bd-hp', label: 'Nomor HP' },
+    { id: 'bd-alamat', label: 'Alamat Lengkap' },
+    { id: 'bd-pendidikan', label: 'Jenjang Pendidikan' },
+  ];
+  for (const f of required) {
+    const el = document.getElementById(f.id);
+    if (!el || !el.value.trim()) {
+      el && el.focus();
+      el && (el.style.borderColor = 'var(--accent)');
+      setTimeout(() => el && (el.style.borderColor = ''), 2000);
+      alert(`Harap isi field: ${f.label}`);
+      return;
+    }
+  }
+  const jk = document.querySelector('input[name="jk"]:checked');
+  if (!jk) { alert('Pilih Jenis Kelamin'); return; }
+  const status = document.querySelector('input[name="status"]:checked');
+  if (!status) { alert('Pilih Status Pernikahan'); return; }
+
+  biodataPayload = {
+    posisi: document.getElementById('bd-posisi').value,
+    nama: document.getElementById('bd-nama').value,
+    panggilan: document.getElementById('bd-panggilan').value,
+    no_ktp: document.getElementById('bd-ktp').value,
+    tempat_lahir: document.getElementById('bd-tmp-lahir').value,
+    tgl_lahir: document.getElementById('bd-tgl-lahir').value,
+    jenis_kelamin: jk.value,
+    status_nikah: status.value,
+    agama: document.getElementById('bd-agama').value,
+    suku: document.getElementById('bd-suku').value,
+    gol_darah: document.getElementById('bd-gol-darah').value,
+    no_hp: document.getElementById('bd-hp').value,
+    tinggi: document.getElementById('bd-tinggi').value,
+    berat: document.getElementById('bd-berat').value,
+    email: document.getElementById('bd-email').value,
+    alamat: document.getElementById('bd-alamat').value,
+    status_tinggal: (document.querySelector('input[name="tinggal"]:checked') || {}).value || '',
+    pendidikan: document.getElementById('bd-pendidikan').value,
+    jurusan: document.getElementById('bd-jurusan').value,
+    sekolah: document.getElementById('bd-sekolah').value,
+    thn_masuk: document.getElementById('bd-thn-masuk').value,
+    thn_lulus: document.getElementById('bd-thn-lulus').value,
+    perusahaan_terakhir: document.getElementById('bd-perusahaan').value,
+    jabatan_terakhir: document.getElementById('bd-jabatan').value,
+    alasan_keluar: document.getElementById('bd-alasan').value,
+    masa_kerja_mulai: document.getElementById('bd-kerja-mulai').value,
+    masa_kerja_sampai: document.getElementById('bd-kerja-sampai').value,
+  };
+  // Start ishihara
+  ishiharaIndex = 0;
+  ishiharaJawaban = {};
+  document.getElementById('ish-nama-label').textContent = pesertaNama;
+  showScreen('screen-ishihara');
+  renderIshiharaPlate();
+}
+
+// ════════════════════════════════════════════════
+//  ISHIHARA PLATES DATA
+// ════════════════════════════════════════════════
+// jawaban_normal = jawaban orang normal
+// jawaban_cb = jawaban orang buta warna (merah-hijau)
+// type: 'number' | 'color' | 'shape'
+const ishiharaPlates = [
+  { plate: 1,  label: 'Angka yang terlihat',   jawaban_normal: '12',        type: 'number', colors: {bg:'#4a4a4a',fg:'#e8522a'} },
+  { plate: 2,  label: 'Angka yang terlihat',   jawaban_normal: '8',         type: 'number', colors: {bg:'#8b7355',fg:'#e8a87c'} },
+  { plate: 3,  label: 'Angka yang terlihat',   jawaban_normal: '29',        type: 'number', colors: {bg:'#7a8a5a',fg:'#e8522a'} },
+  { plate: 4,  label: 'Angka yang terlihat',   jawaban_normal: '5',         type: 'number', colors: {bg:'#6b7a4a',fg:'#e8a87c'} },
+  { plate: 5,  label: 'Angka yang terlihat',   jawaban_normal: '74',        type: 'number', colors: {bg:'#5a6a4a',fg:'#e87a3a'} },
+  { plate: 6,  label: 'Angka yang terlihat',   jawaban_normal: '7',         type: 'number', colors: {bg:'#e8a020',fg:'#d43020'} },
+  { plate: 7,  label: 'Angka yang terlihat',   jawaban_normal: '45',        type: 'number', colors: {bg:'#e8b040',fg:'#4a8a4a'} },
+  { plate: 8,  label: 'Angka yang terlihat',   jawaban_normal: '2',         type: 'number', colors: {bg:'#e0983a',fg:'#4a7a4a'} },
+  { plate: 9,  label: 'Angka yang terlihat',   jawaban_normal: '4',         type: 'number', colors: {bg:'#e8b040',fg:'#4a8a4a'} },
+  { plate: 10, label: 'Angka yang terlihat',   jawaban_normal: '16',        type: 'number', colors: {bg:'#8a9a6a',fg:'#e87a3a'} },
+  { plate: 11, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#7a8a6a',fg:'#e07840'} },
+  { plate: 12, label: 'Angka yang terlihat',   jawaban_normal: '35',        type: 'number', colors: {bg:'#8a8a5a',fg:'#e07840'} },
+  { plate: 13, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#7a8a6a',fg:'#6a9060'} },
+  { plate: 14, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#e8c060',fg:'#c04030'} },
+  { plate: 15, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#e8c060',fg:'#4a8a4a'} },
+  { plate: 16, label: 'Angka yang terlihat',   jawaban_normal: '26',        type: 'number', colors: {bg:'#e8a040',fg:'#4a8050'} },
+  { plate: 17, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#e8a040',fg:'#608060'} },
+  { plate: 18, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#608050',fg:'#e06030'} },
+  { plate: 19, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#e07840',fg:'#5a7850'} },
+  { plate: 20, label: 'Angka yang terlihat',   jawaban_normal: '42',        type: 'number', colors: {bg:'#706050',fg:'#c05030'} },
+  { plate: 21, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#706050',fg:'#e07040'} },
+  { plate: 22, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#303030',fg:'#c03030'} },
+  { plate: 23, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#303030',fg:'#c03030'} },
+  { plate: 24, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#303030',fg:'#c03030'} },
+  { plate: 25, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#404040',fg:'#c03030'} },
+  { plate: 26, label: 'Warna garis yang terlihat', jawaban_normal: 'Ungu & Merah', type: 'color', colors: {bg:'#404040',fg:'#c03030'} },
+  { plate: 27, label: 'Warna garis yang terlihat', jawaban_normal: 'Ungu & Merah', type: 'color', colors: {bg:'#404040',fg:'#c03030'} },
+  { plate: 28, label: 'Apa yang terlihat',         jawaban_normal: 'Tidak ada angka', type: 'shape', colors: {bg:'#d09050',fg:'#5a8050'} },
+  { plate: 29, label: 'Apa yang terlihat',         jawaban_normal: 'Tidak ada angka', type: 'shape', colors: {bg:'#c08050',fg:'#5a7850'} },
+  { plate: 30, label: 'Warna garis yang terlihat', jawaban_normal: 'Oranye & Merah Muda', type: 'color', colors: {bg:'#e8b840',fg:'#5a8050'} },
+  { plate: 31, label: 'Warna garis yang terlihat', jawaban_normal: 'Oranye & Merah Muda', type: 'color', colors: {bg:'#e8a030',fg:'#5a8050'} },
+  { plate: 32, label: 'Warna garis yang terlihat', jawaban_normal: 'Ungu', type: 'color', colors: {bg:'#8a9060',fg:'#e07040'} },
+  { plate: 33, label: 'Warna garis yang terlihat', jawaban_normal: 'Ungu', type: 'color', colors: {bg:'#8a9060',fg:'#607050'} },
+  { plate: 34, label: 'Warna garis yang terlihat', jawaban_normal: 'Ungu', type: 'color', colors: {bg:'#e8a040',fg:'#5a8050'} },
+  { plate: 35, label: 'Warna garis yang terlihat', jawaban_normal: 'Jingga', type: 'color', colors: {bg:'#e8a040',fg:'#c04030'} },
+  { plate: 36, label: 'Warna garis yang terlihat', jawaban_normal: 'Merah & Hijau', type: 'color', colors: {bg:'#8a8a50',fg:'#e07050'} },
+  { plate: 37, label: 'Warna garis yang terlihat', jawaban_normal: 'Merah & Hijau', type: 'color', colors: {bg:'#8a8050',fg:'#e07840'} },
+  { plate: 38, label: 'Warna garis yang terlihat', jawaban_normal: 'Merah & Ungu', type: 'color', colors: {bg:'#4a5a6a',fg:'#e05030'} },
+];
+
+// ════════════════════════════════════════════════
+//  ISHIHARA RENDERER (Canvas-based dots)
+// ════════════════════════════════════════════════
+function renderIshiharaPlate() {
+  const plate = ishiharaPlates[ishiharaIndex];
+  const total = ishiharaPlates.length;
+
+  document.getElementById('ish-progress-label').textContent = `Plate ${ishiharaIndex+1} dari ${total}`;
+  document.getElementById('ish-progress-fill').style.width = `${(ishiharaIndex/total)*100}%`;
+  document.getElementById('ish-plate-label').innerHTML = `Plate ${plate.plate} — <em>${plate.label}:</em>`;
+  document.getElementById('ish-answer').value = '';
+  document.getElementById('ish-answer').focus();
+  document.getElementById('ish-btn-next').textContent =
+    ishiharaIndex < total - 1 ? 'Plate Berikutnya →' : 'Selesai & Mulai Psikotes →';
+
+  const canvas = document.getElementById('ish-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const R = W / 2;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Clip to circle
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(R, R, R - 2, 0, Math.PI * 2);
+  ctx.clip();
+
+  // Fill background color
+  ctx.fillStyle = plate.colors.bg;
+  ctx.fillRect(0, 0, W, H);
+
+  // Generate dots
+  const rng = seededRandom(plate.plate * 137);
+  const dots = [];
+
+  // Background dots
+  for (let i = 0; i < 320; i++) {
+    let x, y, r, tries = 0;
+    do {
+      r = 4 + rng() * 9;
+      x = r + rng() * (W - 2 * r);
+      y = r + rng() * (H - 2 * r);
+      tries++;
+    } while (tries < 20 && (Math.hypot(x - R, y - R) > R - r || dots.some(d => Math.hypot(d.x - x, d.y - y) < d.r + r + 1)));
+    if (Math.hypot(x - R, y - R) <= R - r) {
+      const shade = plate.colors.bg;
+      const variation = colorVariation(shade, rng, 30);
+      dots.push({ x, y, r, color: variation });
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = variation;
+      ctx.fill();
+    }
+  }
+
+  // Foreground figure dots (number/pattern silhouette)
+  const figureDots = generateFigureDots(plate.plate, rng, W, H);
+  for (const fd of figureDots) {
+    const variation = colorVariation(plate.colors.fg, rng, 25);
+    ctx.beginPath();
+    ctx.arc(fd.x, fd.y, fd.r, 0, Math.PI * 2);
+    ctx.fillStyle = variation;
+    ctx.fill();
+  }
+
+  ctx.restore();
+
+  // Border circle
+  ctx.beginPath();
+  ctx.arc(R, R, R - 2, 0, Math.PI * 2);
+  ctx.strokeStyle = '#ccc';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+}
+
+function seededRandom(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    return ((s >>> 0) / 0xffffffff);
+  };
+}
+
+function colorVariation(hex, rng, amount) {
+  const r = parseInt(hex.slice(1,3), 16);
+  const g = parseInt(hex.slice(3,5), 16);
+  const b = parseInt(hex.slice(5,7), 16);
+  const d = (rng() - 0.5) * amount * 2;
+  const clamp = v => Math.max(0, Math.min(255, Math.round(v + d)));
+  return `rgb(${clamp(r)},${clamp(g)},${clamp(b)})`;
+}
+
+// Digit pixel maps (5×7 grid for numbers 0-9)
+const DIGIT_MAP = {
+  '0': [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,1,1],[1,0,1,0,1],[1,1,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+  '1': [[0,0,1,0,0],[0,1,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,1,1,1,0]],
+  '2': [[0,1,1,1,0],[1,0,0,0,1],[0,0,0,0,1],[0,0,0,1,0],[0,0,1,0,0],[0,1,0,0,0],[1,1,1,1,1]],
+  '3': [[1,1,1,1,0],[0,0,0,0,1],[0,0,0,0,1],[0,1,1,1,0],[0,0,0,0,1],[0,0,0,0,1],[1,1,1,1,0]],
+  '4': [[0,0,0,1,0],[0,0,1,1,0],[0,1,0,1,0],[1,0,0,1,0],[1,1,1,1,1],[0,0,0,1,0],[0,0,0,1,0]],
+  '5': [[1,1,1,1,1],[1,0,0,0,0],[1,1,1,1,0],[0,0,0,0,1],[0,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+  '6': [[0,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+  '7': [[1,1,1,1,1],[0,0,0,0,1],[0,0,0,1,0],[0,0,1,0,0],[0,1,0,0,0],[0,1,0,0,0],[0,1,0,0,0]],
+  '8': [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+  '9': [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,1],[0,0,0,0,1],[0,0,0,0,1],[0,1,1,1,0]],
+};
+
+function generateFigureDots(plateNum, rng, W, H) {
+  const plate = ishiharaPlates[plateNum - 1];
+  const answer = plate.jawaban_normal;
+  const dots = [];
+
+  if (plate.type === 'color' || plate.type === 'shape') {
+    // Draw a wavy line pattern
+    const cx = W / 2, cy = H / 2;
+    for (let t = 0; t < Math.PI * 1.5; t += 0.08) {
+      const x = cx + Math.cos(t) * (40 + Math.sin(t * 3) * 15);
+      const y = cy + Math.sin(t) * (40 + Math.cos(t * 3) * 15);
+      if (Math.hypot(x - cx, y - cy) < cx - 10) {
+        dots.push({ x: x + (rng()-0.5)*6, y: y + (rng()-0.5)*6, r: 5 + rng()*5 });
+      }
+    }
+    return dots;
+  }
+
+  // Number plates
+  const digits = answer.replace(/[^0-9]/g, '');
+  if (!digits) return dots;
+
+  const cellSize = 16;
+  const totalW = digits.length * 5 * cellSize + (digits.length - 1) * 4;
+  const startX = (W - totalW) / 2;
+  const startY = (H - 7 * cellSize) / 2;
+
+  for (let d = 0; d < digits.length; d++) {
+    const map = DIGIT_MAP[digits[d]];
+    if (!map) continue;
+    const offX = startX + d * (5 * cellSize + 4);
+    for (let row = 0; row < 7; row++) {
+      for (let col = 0; col < 5; col++) {
+        if (map[row][col]) {
+          const bx = offX + col * cellSize + cellSize / 2;
+          const by = startY + row * cellSize + cellSize / 2;
+          // Add 2-3 dots per cell for natural look
+          const count = 2 + Math.floor(rng() * 2);
+          for (let k = 0; k < count; k++) {
+            const jx = bx + (rng() - 0.5) * cellSize * 0.9;
+            const jy = by + (rng() - 0.5) * cellSize * 0.9;
+            dots.push({ x: jx, y: jy, r: 4 + rng() * 6 });
+          }
+        }
+      }
+    }
+  }
+  return dots;
+}
+
+function ishiharaNext() {
+  const answer = document.getElementById('ish-answer').value.trim();
+  ishiharaJawaban[`plate_${ishiharaIndex + 1}`] = answer || 'Tidak diisi';
+  ishiharaIndex++;
+  if (ishiharaIndex < ishiharaPlates.length) {
+    renderIshiharaPlate();
+  } else {
+    startTest();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('ish-answer').addEventListener('keydown', e => {
+    if (e.key === 'Enter') ishiharaNext();
+  });
+});
+
+
+let soalAcak = [];
+let indexSoal = 0;
+let jawaban = {};
+let tabSwitchCount = 0;
+let timerInterval = null;
+let timerSisa = WAKTU_PER_SOAL;
+let selectedOpsi = null;
+let submitted = false;
+let waktuMulai = null;
+
+// ════════════════════════════════════════════════
+//  UTILS
+// ════════════════════════════════════════════════
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+const HURUF = ["A","B","C","D","E"];
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════
+//  ANTI-CHEAT
+// ════════════════════════════════════════════════
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('copy', e => e.preventDefault());
+document.addEventListener('cut', e => e.preventDefault());
+document.addEventListener('paste', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  // disable F12, Ctrl+U, Ctrl+Shift+I/J/C, PrintScreen
+  if (e.key === "F12" || (e.ctrlKey && ['u','U','c','C','v','V','x','X','a','A','s','S','p','P'].includes(e.key))) {
+    if (document.getElementById('screen-soal').classList.contains('active')) {
+      e.preventDefault();
+    }
+  }
+});
+
+document.addEventListener('visibilitychange', () => {
+  const soalAktif     = document.getElementById('screen-soal').classList.contains('active');
+  const ketelitianAktif = document.getElementById('screen-ketelitian').classList.contains('active');
+  if (document.hidden && (soalAktif || ketelitianAktif)) {
+    tabSwitchCount++;
+    pauseTimer();
+    document.getElementById('warn-count').textContent = `Jumlah pelanggaran: ${tabSwitchCount}`;
+    document.getElementById('warning-overlay').classList.add('show');
+  }
+});
+window.addEventListener('blur', () => {
+  const soalAktif     = document.getElementById('screen-soal').classList.contains('active');
+  const ketelitianAktif = document.getElementById('screen-ketelitian').classList.contains('active');
+  if ((soalAktif || ketelitianAktif) && !document.hidden) {
+    tabSwitchCount++;
+    pauseTimer();
+    document.getElementById('warn-count').textContent = `Jumlah pelanggaran: ${tabSwitchCount}`;
+    document.getElementById('warning-overlay').classList.add('show');
+  }
+});
+
+function closeWarning() {
+  document.getElementById('warning-overlay').classList.remove('show');
+  // Resume timer yang sedang aktif
+  if (document.getElementById('screen-ketelitian').classList.contains('active')) {
+    resumeKetTimer();
+  } else {
+    resumeTimer();
+  }
+}
+
+function resumeKetTimer() {
+  if (ketSisa > 0) {
+    ketTimer = setInterval(() => {
+      ketSisa--;
+      updateKetTimerUI();
+      if (ketSisa <= 0) {
+        clearInterval(ketTimer);
+        submitKetelitian();
+      }
+    }, 1000);
+  }
+}
+
+// ════════════════════════════════════════════════
+//  SCREEN 1 → 2
+// ════════════════════════════════════════════════
+function goToInfo() {
+  const val = document.getElementById('input-nama').value.trim();
+  if (!val || val.length < 3) {
+    document.getElementById('input-nama').focus();
+    document.getElementById('input-nama').style.borderColor = 'var(--accent)';
+    return;
+  }
+  document.getElementById('input-nama').style.borderColor = '';
+  pesertaNama = val;
+  document.getElementById('info-total-soal').textContent = semuaSoal.length;
+  // Prefill nama di form biodata
+  document.getElementById('bd-nama').value = val;
+  showScreen('screen-info');
+}
+document.getElementById('input-nama').addEventListener('keydown', e => {
+  if (e.key === 'Enter') goToInfo();
+});
+
+// ════════════════════════════════════════════════
+//  START TEST
+// ════════════════════════════════════════════════
+function startTest() {
+  soalAcak = shuffle(semuaSoal).map(s => {
+    // Acak opsi juga, simpan mapping
+    const opsiOriginal = s.opsi;
+    const opsiIndexAcak = shuffle([0,1,2,3,4].slice(0, opsiOriginal.length));
+    const opsiAcak = opsiIndexAcak.map(i => opsiOriginal[i]);
+    // Cari jawaban benar di posisi baru
+    const jawabanBenarIndex = HURUF.indexOf(s.jawaban_benar);
+    const posisiBaru = opsiIndexAcak.indexOf(jawabanBenarIndex);
+    return {
+      ...s,
+      opsiTampil: opsiAcak,
+      jawabanBenarHuruf: HURUF[posisiBaru],
+    };
+  });
+  indexSoal = 0;
+  jawaban = {};
+  tabSwitchCount = 0;
+  submitted = false;
+  waktuMulai = new Date();
+  document.getElementById('nama-label').textContent = pesertaNama;
+  showScreen('screen-soal');
+  tampilkanSoal();
+}
+
+// ════════════════════════════════════════════════
+//  TAMPILKAN SOAL
+// ════════════════════════════════════════════════
+function tampilkanSoal() {
+  const soal = soalAcak[indexSoal];
+  const total = soalAcak.length;
+  selectedOpsi = null;
+
+  // Progress
+  document.getElementById('progress-label').textContent = `Soal ${indexSoal+1} dari ${total}`;
+  document.getElementById('progress-fill').style.width = `${(indexSoal/total)*100}%`;
+  document.getElementById('soal-number').textContent = `SOAL ${indexSoal+1}`;
+  document.getElementById('soal-kategori').textContent = soal.kategori;
+
+  // Question
+  document.getElementById('question-text').textContent = soal.soal;
+
+  // Options
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+  soal.opsiTampil.forEach((opsi, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-letter">${HURUF[i]}</span><span>${opsi}</span>`;
+    btn.onclick = () => pilihOpsi(i, btn);
+    container.appendChild(btn);
+  });
+
+  // Next btn
+  const btnNext = document.getElementById('btn-next');
+  btnNext.classList.remove('visible');
+  btnNext.disabled = false;
+  btnNext.textContent = indexSoal < soalAcak.length - 1 ? 'Soal Berikutnya →' : 'Selesai & Kirim Hasil';
+
+  // Timer
+  startTimer();
+}
+
+function pilihOpsi(index, btnEl) {
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btnEl.classList.add('selected');
+  selectedOpsi = index;
+  document.getElementById('btn-next').classList.add('visible');
+}
+
+// ════════════════════════════════════════════════
+//  TIMER
+// ════════════════════════════════════════════════
+const CIRCUMFERENCE = 2 * Math.PI * 20; // r=20 → 125.66
+
+function startTimer() {
+  timerSisa = WAKTU_PER_SOAL;
+  updateTimerUI();
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timerSisa--;
+    updateTimerUI();
+    if (timerSisa <= 0) {
+      clearInterval(timerInterval);
+      autoNext();
+    }
+  }, 1000);
+}
+function pauseTimer() {
+  clearInterval(timerInterval);
+  clearInterval(ketTimer);
+}
+function resumeTimer() {
+  if (timerSisa > 0) {
+    timerInterval = setInterval(() => {
+      timerSisa--;
+      updateTimerUI();
+      if (timerSisa <= 0) {
+        clearInterval(timerInterval);
+        autoNext();
+      }
+    }, 1000);
+  }
+}
+function updateTimerUI() {
+  const pct = timerSisa / WAKTU_PER_SOAL;
+  const offset = CIRCUMFERENCE * (1 - pct);
+  const circle = document.getElementById('timer-circle');
+  circle.style.strokeDashoffset = offset;
+  document.getElementById('timer-num').textContent = timerSisa;
+  if (timerSisa > 10) {
+    circle.style.stroke = 'var(--timer-ok)';
+  } else if (timerSisa > 5) {
+    circle.style.stroke = 'var(--timer-warn)';
+  } else {
+    circle.style.stroke = 'var(--timer-danger)';
+  }
+}
+function autoNext() {
+  // catat tidak dijawab
+  simpanJawaban(null);
+  lanjutkanSoal();
+}
+
+// ════════════════════════════════════════════════
+//  NEXT QUESTION
+// ════════════════════════════════════════════════
+function nextQuestion() {
+  if (submitted) return;
+  clearInterval(timerInterval);
+  simpanJawaban(selectedOpsi);
+  lanjutkanSoal();
+}
+
+function simpanJawaban(opsiIndex) {
+  const soal = soalAcak[indexSoal];
+  const kunci = soal.id; // pakai id asli soal, bukan nomor urut (karena soal diacak per peserta)
+  const jawabanBenarTeks = soal.opsiTampil[HURUF.indexOf(soal.jawabanBenarHuruf)];
+
+  if (opsiIndex === null) {
+    jawaban[kunci] = {
+      no_urut: indexSoal + 1,
+      kategori: soal.kategori,
+      soal: soal.soal,
+      pilihan_user: "Tidak dijawab",
+      jawaban_benar: jawabanBenarTeks,
+      benar: false,
+    };
+  } else {
+    const hurufDipilih = HURUF[opsiIndex];
+    jawaban[kunci] = {
+      no_urut: indexSoal + 1,
+      kategori: soal.kategori,
+      soal: soal.soal,
+      pilihan_user: soal.opsiTampil[opsiIndex],
+      jawaban_benar: jawabanBenarTeks,
+      benar: hurufDipilih === soal.jawabanBenarHuruf,
+    };
+  }
+}
+
+function lanjutkanSoal() {
+  indexSoal++;
+  if (indexSoal < soalAcak.length) {
+    tampilkanSoal();
+  } else {
+    selesaikanTes();
+  }
+}
+
+// ════════════════════════════════════════════════
+//  HITUNG SKOR
+// ════════════════════════════════════════════════
+function hitungSkor() {
+  let benar = 0;
+  soalAcak.forEach(soal => {
+    const item = jawaban[soal.id];
+    if (item && item.benar) benar++;
+  });
+  return benar;
+}
+
+// ════════════════════════════════════════════════
+//  DATA KETELITIAN
+// ════════════════════════════════════════════════
+const ketelitianData = [
+  { no:1,  a:'8 7 9 5 5 3 7 6 9 0', b:'8 7 9 2 5 2 7 6 9 0', jawaban:'4,6' },
+  { no:2,  a:'3 3 1 5 4 8 7 2 1 3', b:'3 3 2 5 4 8 7 4 1 2', jawaban:'3,8,10' },
+  { no:3,  a:'1 7 0 6 2 8 0 6 5 9', b:'1 6 0 6 1 8 0 9 5 9', jawaban:'2,5,8' },
+  { no:4,  a:'7 8 5 8 4 2 1 0 2 6', b:'7 8 5 5 4 2 1 0 0 6', jawaban:'4,9' },
+  { no:5,  a:'6 3 9 6 7 6 5 4 3 2', b:'6 3 7 2 7 8 6 4 2 2', jawaban:'3,4,6,7,9' },
+  { no:6,  a:'9 7 5 3 5 9 8 4 0 1', b:'9 7 6 6 5 9 8 4 3 1', jawaban:'3,4,9' },
+  { no:7,  a:'2 7 6 8 5 4 1 0 7 6', b:'2 7 8 8 6 4 1 2 7 6', jawaban:'3,5,8' },
+  { no:8,  a:'9 4 8 7 2 6 2 0 3 5', b:'6 4 8 7 6 3 2 5 3 5', jawaban:'1,5,6,8' },
+  { no:9,  a:'8 3 6 7 7 4 5 7 2 1', b:'8 3 6 7 6 4 8 7 2 4', jawaban:'5,7,10' },
+  { no:10, a:'3 5 8 1 4 6 7 3 1 2', b:'3 6 8 6 4 6 7 3 1 3', jawaban:'2,4,10' },
+  { no:11, a:'1 3 7 5 4 2 9 7 6 5', b:'1 3 6 8 4 2 6 7 0 5', jawaban:'3,4,7,9' },
+  { no:12, a:'4 7 8 5 8 3 9 2 0 7', b:'4 5 8 6 0 3 9 2 8 3', jawaban:'2,4,5,9,10' },
+  { no:13, a:'2 7 8 3 7 6 5 2 3 1', b:'2 8 9 3 7 6 5 3 2 1', jawaban:'2,3,8,9' },
+  { no:14, a:'6 2 7 7 8 3 9 5 4 2', b:'6 2 3 7 8 8 9 5 4 0', jawaban:'3,6,10' },
+  { no:15, a:'7 5 4 9 6 0 2 9 5 3', b:'6 5 4 9 6 3 2 9 0 3', jawaban:'1,6,9' },
+];
+
+const WAKTU_KETELITIAN = 900; // detik (15 menit)
+let ketTimer = null;
+let ketSisa = WAKTU_KETELITIAN;
+let ketelitianJawaban = {};
+let psikotesSkor = 0;
+let psikotesTotal = 0;
+
+function mulaiKetelitian() {
+  // Render tabel
+  const tbody = document.getElementById('ket-tbody');
+  tbody.innerHTML = '';
+  ketelitianData.forEach(row => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="no-col">${row.no}</td>
+      <td>${row.a}</td>
+      <td>${row.b}</td>
+      <td class="ket-answer-col">
+        <input type="text" class="ket-diff-input" id="ket-ans-${row.no}"
+          placeholder="cth: 4,6" autocomplete="off" maxlength="30">
+      </td>`;
+    tbody.appendChild(tr);
+  });
+
+  // Fokus ke input pertama
+  setTimeout(() => {
+    const first = document.getElementById('ket-ans-1');
+    if (first) first.focus();
+  }, 100);
+
+  // Mulai timer 60 detik
+  ketSisa = WAKTU_KETELITIAN;
+  updateKetTimerUI();
+  clearInterval(ketTimer);
+  ketTimer = setInterval(() => {
+    ketSisa--;
+    updateKetTimerUI();
+    if (ketSisa <= 0) {
+      clearInterval(ketTimer);
+      submitKetelitian(); // otomatis submit
+    }
+  }, 1000);
+
+  showScreen('screen-ketelitian');
+}
+
+function updateKetTimerUI() {
+  const pct  = (ketSisa / WAKTU_KETELITIAN) * 100;
+  const fill = document.getElementById('ket-timer-fill');
+  fill.style.width = pct + '%';
+  if (ketSisa > 300) fill.style.background = 'var(--timer-ok)';
+  else if (ketSisa > 60) fill.style.background = 'var(--timer-warn)';
+  else fill.style.background = 'var(--timer-danger)';
+  // Format MM:SS
+  const menit  = String(Math.floor(ketSisa / 60)).padStart(2, '0');
+  const detik  = String(ketSisa % 60).padStart(2, '0');
+  document.getElementById('ket-timer-num').textContent = `${menit}:${detik}`;
+}
+
+function submitKetelitian() {
+  clearInterval(ketTimer);
+  document.getElementById('ket-submit-btn').disabled = true;
+
+  // Kumpulkan jawaban
+  ketelitianData.forEach(row => {
+    const inp = document.getElementById(`ket-ans-${row.no}`);
+    ketelitianJawaban[`no_${row.no}`] = inp ? inp.value.trim() || 'Tidak diisi' : 'Tidak diisi';
+  });
+
+  // Hitung skor ketelitian (jumlah baris yang jawabannya benar persis)
+  let ketBenar = 0;
+  ketelitianData.forEach(row => {
+    const jawUser = (ketelitianJawaban[`no_${row.no}`] || '').replace(/\s/g,'');
+    const jawKunci = row.jawaban.replace(/\s/g,'');
+    if (jawUser === jawKunci) ketBenar++;
+  });
+  ketelitianJawaban._skor = ketBenar;
+  ketelitianJawaban._total = ketelitianData.length;
+
+  kirimSemuaData();
+}
+
+// ════════════════════════════════════════════════
+//  SELESAI PSIKOTES → ke Ketelitian
+// ════════════════════════════════════════════════
+async function selesaikanTes() {
+  if (submitted) return;
+  submitted = true;
+  clearInterval(timerInterval);
+
+  psikotesSkor  = hitungSkor();
+  psikotesTotal = soalAcak.length;
+
+  // Lanjut ke intro tes ketelitian
+  showScreen('screen-ketelitian-intro');
+}
+
+// ════════════════════════════════════════════════
+//  KIRIM SEMUA DATA KE SUPABASE
+// ════════════════════════════════════════════════
+async function kirimSemuaData() {
+  const waktuSubmit = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+
+  const payload = {
+    nama: pesertaNama,
+    waktu_submit: waktuSubmit,
+    tab_switch: tabSwitchCount,
+    skor: psikotesSkor,
+    total_soal: psikotesTotal,
+    jawaban: jawaban,
+    biodata: biodataPayload,
+    buta_warna: ishiharaJawaban,
+    ketelitian: ketelitianJawaban,
+  };
+
+  // Simpan cadangan lokal ke localStorage agar jawaban tidak hilang
+  try {
+    localStorage.setItem('psikotes_backup_terakhir', JSON.stringify(payload));
+  } catch (err) {
+    console.warn("Gagal simpan ke localStorage:", err);
+  }
+
+  // Tampilkan overlay loading
+  const overlay = document.getElementById('sending-overlay');
+  const spinner = document.getElementById('sending-spinner');
+  const text = document.getElementById('sending-text');
+  const errBox = document.getElementById('sending-error-actions');
+
+  overlay.classList.add('show');
+  spinner.style.display = 'block';
+  text.style.display = 'block';
+  text.textContent = 'Mengirim data ke database...';
+  errBox.style.display = 'none';
+
+  // Kirim ke Supabase via PostgREST
+  try {
+    const headers = {
+      "Content-Type": "application/json",
+      "apikey": SUPABASE_KEY,
+      "Prefer": "return=minimal",
+    };
+    if (SUPABASE_KEY.startsWith("ey")) {
+      headers["Authorization"] = `Bearer ${SUPABASE_KEY}`;
+    }
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(payload),
+    });
+
+    if (res.ok) {
+      overlay.classList.remove('show');
+      document.getElementById('done-time').textContent = waktuSubmit;
+      showScreen('screen-done');
+      return;
+    }
+
+    const errText = await res.text();
+    console.error("Supabase insert gagal:", res.status, errText);
+    tampilkanErrorPengiriman(`Gagal mengirim ke database (Status ${res.status}): ${errText || 'Periksa tabel dan izin Supabase Anda.'}`);
+  } catch (e) {
+    console.warn("Gagal menghubungi Supabase:", e);
+    tampilkanErrorPengiriman(`Tidak dapat menghubungi server database (${e.message}). Pastikan URL Supabase aktif dan project tidak dalam status 'Paused'.`);
+  }
+}
+
+function tampilkanErrorPengiriman(pesan) {
+  const spinner = document.getElementById('sending-spinner');
+  const text = document.getElementById('sending-text');
+  const errBox = document.getElementById('sending-error-actions');
+  const errMsg = document.getElementById('sending-error-msg');
+
+  spinner.style.display = 'none';
+  text.style.display = 'none';
+  errMsg.textContent = pesan;
+  errBox.style.display = 'block';
+}
+
+function unduhDataBackup() {
+  const data = localStorage.getItem('psikotes_backup_terakhir') || '{}';
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `hasil_psikotes_${(pesertaNama || 'peserta').replace(/\s+/g, '_')}_${Date.now()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function lewatiDanSelesai() {
+  document.getElementById('sending-overlay').classList.remove('show');
+  const waktuSubmit = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+  document.getElementById('done-time').textContent = waktuSubmit;
+  showScreen('screen-done');
+}
+
+// ════════════════════════════════════════════════
+//  HELPER: TEST KONEKSI SUPABASE DI CONSOLE
+// ════════════════════════════════════════════════
+window.testKoneksiSupabase = async function() {
+  console.log("%c[Supabase Test] Menguji URL:", "color:#2a9d8f; font-weight:bold;", SUPABASE_URL);
+  try {
+    const headers = {
+      "apikey": SUPABASE_KEY,
+    };
+    if (SUPABASE_KEY.startsWith("ey")) {
+      headers["Authorization"] = `Bearer ${SUPABASE_KEY}`;
+    }
+
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?select=count`, {
+      method: "HEAD",
+      headers: headers
+    });
+
+    if (res.ok) {
+      console.log("%c✅ Terhubung ke Supabase & tabel '" + SUPABASE_TABLE + "' siap!", "color:green; font-weight:bold; font-size:1.1rem;");
+      alert("✅ Berhasil! Terhubung ke Supabase dan tabel '" + SUPABASE_TABLE + "' siap menerima data.");
+      return true;
+    } else {
+      const err = await res.text();
+      console.error("%c❌ Respon Supabase Error (Status " + res.status + "):", "color:red; font-weight:bold;", err);
+      alert("⚠️ Terhubung ke host Supabase, tetapi respons error (Status " + res.status + "):\n" + err + "\n\nPastikan tabel '" + SUPABASE_TABLE + "' sudah dibuat dan RLS policy diaktifkan.");
+      return false;
+    }
+  } catch (err) {
+    console.error("%c❌ Gagal menghubungi server Supabase:", "color:red; font-weight:bold;", err);
+    alert("❌ Gagal menghubungi server Supabase!\n\nDetail: " + err.message + "\n\nKemungkinan penyebab:\n1. Project Supabase sedang 'PAUSED' di dashboard Supabase.\n2. URL Supabase salah ketik / tidak aktif.");
+    return false;
+  }
+};
+
+</script>
+</body>
+</html>
