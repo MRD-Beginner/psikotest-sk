@@ -939,6 +939,31 @@ const semuaSoal = [
   },
 ];
 
+const DEFAULT_PSIKOTES_KEYS = Object.fromEntries(semuaSoal.map(s => [s.id, s.jawaban_benar]));
+
+function applyCustomKeysFromAdmin() {
+  try {
+    const raw = localStorage.getItem('psikotes_custom_keys_v1');
+    const parsed = raw ? JSON.parse(raw) : null;
+    const pOverrides = (parsed && parsed.psikotes) ? parsed.psikotes : {};
+    const kOverrides = (parsed && parsed.ketelitian) ? parsed.ketelitian : {};
+
+    semuaSoal.forEach(s => {
+      const ov = pOverrides[s.id];
+      s.jawaban_benar = (ov && ['A','B','C','D','E'].includes(ov)) ? ov : DEFAULT_PSIKOTES_KEYS[s.id];
+    });
+    if (typeof ketelitianData !== 'undefined') {
+      ketelitianData.forEach(row => {
+        if (!row._defaultJawaban) row._defaultJawaban = row.jawaban;
+        const ov = kOverrides[String(row.no)];
+        row.jawaban = (ov && String(ov).trim()) ? String(ov).trim() : row._defaultJawaban;
+      });
+    }
+  } catch (e) {
+    console.warn('Gagal membaca penyesuaian kunci:', e);
+  }
+}
+
 // Langsung tampilkan halaman welcome
 document.getElementById('screen-welcome').classList.add('active');
 
@@ -1053,8 +1078,8 @@ const ishiharaPlates = [
   { plate: 24, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#303030',fg:'#c03030'} },
   { plate: 25, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#404040',fg:'#c03030'} },
   { plate: 26, label: 'Warna garis yang terlihat', jawaban_normal: 'Ungu & Merah', type: 'color', colors: {bg:'#404040',fg:'#c03030'} },
-  { plate: 27, label: 'Warna garis yang terlihat', jawaban_normal: 'Ungu & Merah', type: 'color', colors: {bg:'#404040',fg:'#c03030'} },
-  { plate: 28, label: 'Apa yang terlihat',         jawaban_normal: 'Tidak ada angka', type: 'shape', colors: {bg:'#d09050',fg:'#5a8050'} },
+  { plate: 27, label: 'Warna garis yang terlihat', jawaban_normal: 'Orange', type: 'color', colors: {bg:'#404040',fg:'#e87a20'} },
+  { plate: 28, label: 'Warna garis yang terlihat', jawaban_normal: 'Orange', type: 'color', colors: {bg:'#5a8050',fg:'#e87a20'} },
   { plate: 29, label: 'Apa yang terlihat',         jawaban_normal: 'Tidak ada angka', type: 'shape', colors: {bg:'#c08050',fg:'#5a7850'} },
   { plate: 30, label: 'Warna garis yang terlihat', jawaban_normal: 'Oranye & Merah Muda', type: 'color', colors: {bg:'#e8b840',fg:'#5a8050'} },
   { plate: 31, label: 'Warna garis yang terlihat', jawaban_normal: 'Oranye & Merah Muda', type: 'color', colors: {bg:'#e8a030',fg:'#5a8050'} },
@@ -1354,6 +1379,7 @@ document.getElementById('input-nama').addEventListener('keydown', e => {
 //  START TEST
 // ════════════════════════════════════════════════
 function startTest() {
+  applyCustomKeysFromAdmin();
   soalAcak = shuffle(semuaSoal).map(s => {
     // Acak opsi juga, simpan mapping
     const opsiOriginal = s.opsi;
@@ -1618,6 +1644,7 @@ function updateKetTimerUI() {
 function submitKetelitian() {
   clearInterval(ketTimer);
   document.getElementById('ket-submit-btn').disabled = true;
+  applyCustomKeysFromAdmin();
 
   // Kumpulkan jawaban
   ketelitianData.forEach(row => {

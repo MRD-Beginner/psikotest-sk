@@ -2,272 +2,1484 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<!-- This site is hosted on Netlify. Anyone can build and deploy a site
-     like this one for free: https://netlify.new/?utm_campaign=loops&utm_source=ai-legible&utm_medium=owned&utm_content=comment&utm_id=2b7403fb-37e8-4242-81b2-9dcad77239d1
-     Netlify hosting facts for this site: static/SSR served via Netlify Edge. -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — Hasil Psikotes PT. Sumatera Kemasindo</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Admin Portal — Hasil Psikotes PT. Sumatera Kemasindo</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
   :root {
-    --bg: #f0f2f5;
+    --bg: #f8fafc;
     --surface: #ffffff;
-    --primary: #1a2744;
-    --accent: #e63946;
-    --accent2: #2a9d8f;
-    --text: #1a2744;
-    --text-soft: #6b7a99;
-    --border: #dde3f0;
-    --radius: 14px;
-    --shadow: 0 4px 24px rgba(26,39,68,0.10);
+    --primary: #0f172a;
+    --primary-hover: #1e293b;
+    --brand: #1e40af;
+    --brand-light: #eff6ff;
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --border: #e2e8f0;
+    --border-subtle: #f1f5f9;
+    
+    --success: #059669;
+    --success-bg: #ecfdf5;
+    --success-border: #a7f3d0;
+    
+    --danger: #dc2626;
+    --danger-bg: #fef2f2;
+    --danger-border: #fecaca;
+    
+    --warning: #d97706;
+    --warning-bg: #fffbeb;
+    --warning-border: #fde68a;
+
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+    --shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+    --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.12);
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Plus Jakarta Sans', sans-serif;
     background: var(--bg);
-    color: var(--text);
+    color: var(--text-main);
     min-height: 100vh;
+    line-height: 1.5;
   }
   .mono { font-family: 'DM Mono', monospace; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 10px 18px; border-radius: var(--radius-sm); font-size: 0.88rem; font-weight: 600;
+    cursor: pointer; border: none; transition: all 0.15s ease; text-decoration: none;
+    font-family: inherit; line-height: 1.2;
+  }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+  .btn-brand { background: var(--brand); color: #fff; }
+  .btn-brand:hover { background: #1d4ed8; transform: translateY(-1px); }
+  .btn-outline { background: #fff; color: var(--text-main); border: 1px solid var(--border); }
+  .btn-outline:hover { background: var(--bg); border-color: #cbd5e1; }
+  .btn-sm { padding: 7px 12px; font-size: 0.8rem; border-radius: 6px; }
+  .btn-excel { background: #047857; color: #fff; }
+  .btn-excel:hover { background: #065f46; transform: translateY(-1px); }
+
+  /* ── BADGES ── */
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;
+    white-space: nowrap;
+  }
+  .badge-success { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-border); }
+  .badge-danger { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger-border); }
+  .badge-warning { background: var(--warning-bg); color: var(--warning); border: 1px solid var(--warning-border); }
+  .badge-neutral { background: var(--bg); color: var(--text-muted); border: 1px solid var(--border); }
 
   /* ── LOGIN SCREEN ── */
   #login-screen {
     min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 20px;
   }
   .login-card {
-    background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
-    padding: 36px 32px; width: 100%; max-width: 380px; margin: 0 16px;
+    background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow-lg);
+    padding: 40px 36px; width: 100%; max-width: 400px;
   }
-  .login-card h1 { font-size: 1.3rem; font-weight: 800; color: var(--primary); margin-bottom: 4px; }
-  .login-card p { font-size: 0.85rem; color: var(--text-soft); margin-bottom: 24px; }
-  label { font-size: 0.82rem; font-weight: 600; margin-bottom: 6px; display: block; }
-  input[type="email"], input[type="password"] {
-    width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px;
-    font-family: inherit; font-size: 0.95rem; margin-bottom: 16px; outline: none; background: var(--bg);
+  .login-brand {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
   }
-  input[type="email"]:focus, input[type="password"]:focus { border-color: var(--primary); background: #fff; }
-  .btn {
-    display: block; width: 100%; padding: 13px 20px; background: var(--primary); color: #fff;
-    border: none; border-radius: 10px; font-family: inherit; font-size: 0.95rem; font-weight: 700;
-    cursor: pointer; transition: transform 0.15s;
+  .brand-icon {
+    width: 44px; height: 44px; background: var(--primary); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; color: #fff; font-size: 1.3rem;
   }
-  .btn:hover { transform: translateY(-1px); }
-  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--border); }
-  .btn-accent2 { background: var(--accent2); }
-  .error-msg { color: var(--accent); font-size: 0.82rem; margin-bottom: 14px; display: none; }
-  .error-msg.show { display: block; }
+  .login-card h1 { font-size: 1.3rem; font-weight: 800; color: var(--primary); }
+  .login-card .subtitle { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 0.82rem; font-weight: 600; margin-bottom: 6px; color: var(--text-main); }
+  .form-control {
+    width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+    font-family: inherit; font-size: 0.92rem; outline: none; transition: border-color 0.15s; background: var(--bg);
+  }
+  .form-control:focus { border-color: var(--brand); background: #fff; }
+  .error-banner {
+    background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger-border);
+    padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.82rem; margin-bottom: 16px; display: none;
+  }
+  .error-banner.show { display: block; }
+  .login-hint {
+    background: var(--brand-light); border: 1px dashed #bfdbfe; border-radius: var(--radius-sm);
+    padding: 10px 12px; font-size: 0.78rem; color: #1e3a8a; margin-top: 18px; text-align: center;
+  }
 
-  /* ── DASHBOARD ── */
-  #dashboard-screen { display: none; padding: 24px; max-width: 1200px; margin: 0 auto; }
-  .topbar {
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
-    flex-wrap: wrap; gap: 12px;
+  /* ── DASHBOARD LAYOUT ── */
+  #dashboard-screen { display: none; }
+  
+  .navbar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
   }
-  .topbar h1 { font-size: 1.3rem; font-weight: 800; color: var(--primary); }
-  .topbar-actions { display: flex; gap: 10px; }
-  .topbar-actions .btn { width: auto; padding: 10px 18px; font-size: 0.85rem; }
+  .nav-inner {
+    max-width: 1280px; margin: 0 auto; padding: 14px 24px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 14px;
+  }
+  .nav-brand { display: flex; align-items: center; gap: 12px; }
+  .nav-logo {
+    width: 38px; height: 38px; background: var(--primary); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800;
+  }
+  .nav-title h2 { font-size: 1.15rem; font-weight: 800; color: var(--primary); }
+  .nav-title p { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+  .nav-actions { display: flex; align-items: center; gap: 10px; }
 
-  .stat-row { display: flex; gap: 14px; margin-bottom: 20px; flex-wrap: wrap; }
+  .dashboard-main { max-width: 1280px; margin: 0 auto; padding: 24px; }
+
+  /* ── STATS ROW ── */
+  .stat-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 16px; margin-bottom: 24px;
+  }
   .stat-card {
-    background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
-    padding: 16px 20px; flex: 1; min-width: 140px;
+    background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border);
+    padding: 18px 20px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
   }
-  .stat-card .num { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
-  .stat-card .lbl { font-size: 0.78rem; color: var(--text-soft); margin-top: 2px; }
+  .stat-card::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--stat-accent, var(--border));
+  }
+  .stat-card.c-primary { --stat-accent: var(--brand); }
+  .stat-card.c-success { --stat-accent: var(--success); }
+  .stat-card.c-danger  { --stat-accent: var(--danger); }
+  .stat-card.c-warning { --stat-accent: var(--warning); }
+  .stat-card .label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-card .value { font-size: 1.8rem; font-weight: 800; color: var(--text-main); margin-top: 4px; }
+  .stat-card .desc { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
 
-  .table-wrap {
-    background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
-    overflow-x: auto;
+  /* ── TOOLBAR / FILTER ── */
+  .toolbar {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px 20px; margin-bottom: 20px; box-shadow: var(--shadow-sm);
+    display: flex; gap: 14px; align-items: center; flex-wrap: wrap; justify-content: space-between;
   }
-  table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
-  th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
-  th { background: var(--bg); color: var(--text-soft); font-weight: 700; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.4px; }
-  tr:hover td { background: #fafbfd; }
-  .badge {
-    display: inline-block; padding: 3px 10px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;
+  .filter-group { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; flex: 1; }
+  .search-wrap { position: relative; min-width: 260px; flex: 1; }
+  .search-wrap input {
+    width: 100%; padding: 9px 12px 9px 36px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-size: 0.88rem; outline: none; background: var(--bg); font-family: inherit;
   }
-  .badge-good { background: rgba(42,157,143,0.15); color: var(--accent2); }
-  .badge-bad { background: rgba(230,57,70,0.15); color: var(--accent); }
-  .link-btn {
-    background: none; border: none; color: var(--primary); font-weight: 700; cursor: pointer;
-    font-family: inherit; font-size: 0.85rem; text-decoration: underline;
+  .search-wrap input:focus { border-color: var(--brand); background: #fff; }
+  .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem; }
+  .filter-select {
+    padding: 9px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-size: 0.88rem; background: var(--surface); color: var(--text-main); outline: none; font-family: inherit;
   }
-  #loading-msg, #empty-msg { padding: 40px; text-align: center; color: var(--text-soft); }
+  .counter-text { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+
+  /* ── TABLE CARD ── */
+  .table-card {
+    background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm); overflow: hidden;
+  }
+  .table-scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; text-align: left; }
+  thead th {
+    background: #f8fafc; color: #475569; font-weight: 700; font-size: 0.75rem;
+    text-transform: uppercase; letter-spacing: 0.6px; padding: 14px 18px;
+    border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  tbody td {
+    padding: 14px 18px; border-bottom: 1px solid var(--border);
+    vertical-align: middle; white-space: nowrap;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #fbfcfe; }
+  
+  .user-cell { display: flex; align-items: center; gap: 12px; }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%; background: #e2e8f0; color: #334155;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+  .user-name { font-weight: 700; color: var(--text-main); font-size: 0.92rem; }
+  .user-posisi { font-size: 0.78rem; color: var(--text-muted); margin-top: 1px; }
+
+  #loading-msg, #empty-msg { padding: 48px; text-align: center; color: var(--text-muted); }
 
   /* ── DETAIL MODAL ── */
   .modal-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(26,39,68,0.55);
-    align-items: flex-start; justify-content: center; z-index: 999; padding: 30px 16px; overflow-y: auto;
+    display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.65);
+    z-index: 999; backdrop-filter: blur(4px); overflow-y: auto; padding: 24px 16px;
+    align-items: flex-start; justify-content: center;
   }
   .modal-overlay.show { display: flex; }
   .modal-box {
-    background: var(--surface); border-radius: var(--radius); max-width: 720px; width: 100%;
-    padding: 28px; margin-bottom: 30px;
+    background: var(--surface); border-radius: var(--radius); width: 100%; max-width: 980px;
+    box-shadow: var(--shadow-lg); overflow: hidden; margin: auto; border: 1px solid var(--border);
   }
-  .modal-box h2 { font-size: 1.2rem; color: var(--primary); margin-bottom: 4px; }
-  .modal-box .sub { font-size: 0.82rem; color: var(--text-soft); margin-bottom: 20px; }
-  .modal-close { float: right; background: var(--bg); border: none; border-radius: 8px; padding: 6px 12px; cursor: pointer; font-weight: 700; }
-  .section-title {
-    font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px;
-    color: var(--text-soft); margin: 20px 0 8px;
+
+  .modal-header {
+    background: var(--primary); color: #fff; padding: 24px 28px;
+    display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;
   }
-  .kv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; font-size: 0.85rem; }
-  .kv-grid div span { color: var(--text-soft); }
-  .qa-row { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
-  .qa-row .q { font-weight: 600; margin-bottom: 4px; }
-  .qa-row .a { color: var(--text-soft); }
-  .qa-row .a.wrong { color: var(--accent); }
-  .qa-row .a.right { color: var(--accent2); }
+  .candidate-info h2 { font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+  .candidate-meta { font-size: 0.85rem; color: #94a3b8; display: flex; gap: 16px; flex-wrap: wrap; }
+  .modal-actions { display: flex; gap: 10px; align-items: center; }
+
+  /* MODAL STATS ROW */
+  .modal-stats-bar {
+    background: #f8fafc; border-bottom: 1px solid var(--border); padding: 14px 28px;
+    display: flex; gap: 20px; flex-wrap: wrap; align-items: center;
+  }
+  .modal-stat-pill {
+    display: flex; align-items: center; gap: 8px; font-size: 0.85rem;
+  }
+  .modal-stat-pill .num { font-weight: 800; font-size: 1.05rem; }
+
+  /* MODAL TABS */
+  .modal-tabs {
+    display: flex; border-bottom: 1px solid var(--border); background: #fff;
+    padding: 0 28px; gap: 8px; overflow-x: auto;
+  }
+  .tab-btn {
+    padding: 14px 18px; border: none; background: none; font-family: inherit;
+    font-size: 0.88rem; font-weight: 600; color: var(--text-muted); cursor: pointer;
+    border-bottom: 3px solid transparent; transition: all 0.15s; white-space: nowrap;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .tab-btn:hover { color: var(--brand); }
+  .tab-btn.active { color: var(--brand); border-bottom-color: var(--brand); font-weight: 700; }
+
+  .tab-content { padding: 28px; max-height: calc(85vh - 220px); overflow-y: auto; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── SOAL COMPARISON CARDS (JELAS: SOAL, REAL, KUNCI) ── */
+  .soal-list { display: flex; flex-direction: column; gap: 18px; }
+  .soal-card {
+    border: 1.5px solid var(--border); border-radius: var(--radius);
+    padding: 20px; background: var(--surface); transition: box-shadow 0.15s;
+  }
+  .soal-card.benar { border-left: 6px solid var(--success); }
+  .soal-card.salah { border-left: 6px solid var(--danger); }
+  
+  .soal-card-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px; gap: 12px; flex-wrap: wrap;
+  }
+  .soal-number-tag {
+    font-size: 0.82rem; font-weight: 800; color: var(--text-main);
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .soal-kat-pill {
+    background: var(--bg); color: var(--text-muted); font-size: 0.74rem; font-weight: 600;
+    padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border);
+  }
+  .soal-question-text {
+    font-size: 1rem; font-weight: 700; color: var(--primary);
+    line-height: 1.5; margin-bottom: 16px;
+  }
+
+  .answers-comparison-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  }
+  @media (max-width: 640px) {
+    .answers-comparison-grid { grid-template-columns: 1fr; }
+  }
+
+  .answer-panel {
+    border-radius: var(--radius-sm); padding: 12px 16px; border: 1px solid transparent;
+  }
+  .answer-panel .ans-label {
+    font-size: 0.74rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;
+  }
+  .answer-panel .ans-value {
+    font-size: 0.95rem; font-weight: 700; word-break: break-word;
+  }
+
+  /* User answer (Real) */
+  .ans-user.is-correct {
+    background: var(--success-bg); border-color: var(--success-border); color: #065f46;
+  }
+  .ans-user.is-wrong {
+    background: var(--danger-bg); border-color: var(--danger-border); color: #991b1b;
+  }
+  /* Key answer (Benar) */
+  .ans-key {
+    background: var(--brand-light); border-color: #bfdbfe; color: #1e3a8a;
+  }
+
+  /* ── BIODATA TAB GRID ── */
+  .bio-section-title {
+    font-size: 0.82rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px;
+    color: var(--primary); margin: 24px 0 12px; padding-bottom: 6px; border-bottom: 2px solid var(--border);
+  }
+  .bio-section-title:first-child { margin-top: 0; }
+  .bio-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px 20px;
+  }
+  .bio-item {
+    background: #f8fafc; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 10px 14px;
+  }
+  .bio-item .lbl { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+  .bio-item .val { font-size: 0.92rem; font-weight: 700; color: var(--text-main); margin-top: 2px; }
+
+  /* ── TABLES FOR ISHIHARA & KETELITIAN ── */
+  .data-compare-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .data-compare-table th {
+    background: #f1f5f9; color: #475569; font-weight: 700; font-size: 0.76rem;
+    text-transform: uppercase; padding: 10px 14px; border: 1px solid var(--border);
+  }
+  .data-compare-table td {
+    padding: 9px 14px; border: 1px solid var(--border); vertical-align: middle;
+  }
+  .data-compare-table tr:hover td { background: #fafbfd; }
+
+  /* ── KEY MANAGER (<dialog>) & INLINE KEY CONTROLS ── */
+  .nav-actions { flex-wrap: wrap; }
+  .key-count-pill {
+    display: inline-flex; align-items: center; padding: 2px 7px; border-radius: 99px;
+    background: #fef3c7; color: #92400e; font-size: 0.72rem; font-weight: 800;
+  }
+  .btn-inline-key {
+    display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px;
+    border-radius: 6px; border: 1px solid #bfdbfe; background: #fff; color: var(--brand);
+    font-size: 0.72rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .btn-inline-key:hover { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .badge-custom-key {
+    background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;
+    font-size: 0.7rem; font-weight: 700; padding: 2px 7px; border-radius: 99px;
+  }
+
+  dialog.km-dialog {
+    margin: auto; border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow-lg); padding: 0; background: var(--surface);
+    width: calc(100vw - 32px); max-width: 1060px; max-height: 90vh;
+    color: var(--text-main); overflow: hidden;
+  }
+  dialog.km-dialog[open] {
+    display: flex; flex-direction: column;
+  }
+  dialog.km-dialog:modal {
+    overscroll-behavior: contain;
+  }
+  dialog.km-dialog::backdrop {
+    background: rgba(15, 23, 42, 0.68);
+    backdrop-filter: blur(4px);
+    overflow: hidden;
+    overscroll-behavior: contain;
+  }
+  .km-header {
+    background: var(--primary); color: #fff; padding: 20px 26px;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  .km-header h2 { font-size: 1.25rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+  .km-header p { font-size: 0.82rem; color: #cbd5e1; margin: 0; }
+  .km-tabs {
+    display: flex; border-bottom: 1px solid var(--border); background: #fff;
+    padding: 0 26px; gap: 8px; overflow-x: auto; flex-shrink: 0;
+  }
+  .km-tab-btn {
+    padding: 13px 16px; border: none; background: none; font-family: inherit;
+    font-size: 0.86rem; font-weight: 600; color: var(--text-muted); cursor: pointer;
+    border-bottom: 3px solid transparent; transition: all 0.15s; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .km-tab-btn:hover { color: var(--brand); }
+  .km-tab-btn.active { color: var(--brand); border-bottom-color: var(--brand); font-weight: 700; }
+  .km-toolbar {
+    background: #f8fafc; border-bottom: 1px solid var(--border); padding: 12px 26px;
+    display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  .km-search {
+    flex: 1; min-width: 220px; padding: 8px 12px; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); font-size: 0.85rem; font-family: inherit; outline: none; background: #fff;
+  }
+  .km-search:focus { border-color: var(--brand); }
+  .km-body {
+    padding: 22px 26px; overflow-y: auto; flex: 1; background: #fcfcfd;
+  }
+  .km-info-note {
+    background: var(--brand-light); border: 1px solid #bfdbfe; color: #1e3a8a;
+    border-radius: var(--radius-sm); padding: 10px 14px; font-size: 0.82rem; margin-bottom: 16px;
+  }
+  .km-card-list { display: flex; flex-direction: column; gap: 14px; }
+  .km-card {
+    background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius);
+    padding: 16px 18px; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .km-card.is-modified { border-left: 5px solid var(--warning); }
+  .km-card-head {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    flex-wrap: wrap; margin-bottom: 10px;
+  }
+  .km-q-title { font-size: 0.96rem; font-weight: 700; color: var(--primary); margin-bottom: 12px; line-height: 1.45; }
+  .km-opt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 8px; }
+  .km-opt-btn {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    width: 100%; text-align: left; padding: 10px 12px; border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border); background: #f8fafc; cursor: pointer;
+    font-family: inherit; font-size: 0.86rem; color: var(--text-main); transition: all 0.15s;
+  }
+  .km-opt-btn:hover { border-color: #93c5fd; background: var(--brand-light); }
+  .km-opt-btn.is-active-key {
+    background: var(--success-bg); border-color: var(--success); color: #065f46; font-weight: 700;
+  }
+  .km-opt-left { display: flex; align-items: center; gap: 9px; min-width: 0; }
+  .km-opt-letter {
+    width: 24px; height: 24px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center;
+    font-size: 0.78rem; font-weight: 800; background: #e2e8f0; color: #334155; flex-shrink: 0;
+  }
+  .km-opt-btn.is-active-key .km-opt-letter { background: var(--success); color: #fff; }
+  .km-opt-tags { display: flex; gap: 4px; flex-shrink: 0; align-items: center; }
+  .km-tag-default {
+    font-size: 0.68rem; font-weight: 700; padding: 2px 6px; border-radius: 99px;
+    background: #e2e8f0; color: #475569;
+  }
+  .km-tag-active {
+    font-size: 0.68rem; font-weight: 800; padding: 2px 6px; border-radius: 99px;
+    background: var(--success); color: #fff;
+  }
+  .km-input {
+    width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 6px;
+    font-family: inherit; font-size: 0.86rem; font-weight: 600; color: var(--text-main); background: #fff;
+    outline: none; transition: border-color 0.15s;
+  }
+  .km-input:focus { border-color: var(--brand); }
+  .km-input.is-modified { border-color: var(--warning); background: #fffbeb; }
+  .km-row-modified { background: #fffdf5 !important; }
+  .km-diff-tok {
+    display: inline-block; padding: 0 3px; border-radius: 4px;
+    background: #fee2e2; color: #b91c1c; font-weight: 700;
+  }
+  .km-flash { animation: kmHighlight 1.6s ease; }
+  @keyframes kmHighlight {
+    0% { box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.35); background: #eff6ff; }
+    100% { box-shadow: none; }
+  }
+  .km-footer {
+    border-top: 1px solid var(--border); background: #fff; padding: 14px 26px;
+    display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap;
+    flex-shrink: 0;
+  }
+  .km-save-status { font-size: 0.82rem; font-weight: 600; color: var(--success); min-height: 20px; }
 
   /* ── PRINT MEDIA QUERY ── */
   @media print {
-    #login-screen, .topbar-actions, .modal-close, #btn-print-detail, .link-btn { display: none !important; }
+    #login-screen, .navbar, .toolbar, .table-card, .modal-actions, .modal-tabs, .btn, .btn-inline-key, dialog, #key-manager-modal { display: none !important; }
     body, #dashboard-screen { background: #fff !important; color: #000 !important; padding: 0 !important; }
-    .table-wrap, .stat-card { box-shadow: none !important; border: 1px solid #ccc !important; }
-    th { background: #eee !important; color: #000 !important; }
-    td, th { border: 1px solid #ccc !important; }
-    .modal-overlay.show { position: static !important; background: none !important; padding: 0 !important; }
-    .modal-box { box-shadow: none !important; border: none !important; max-width: 100% !important; padding: 0 !important; }
+    .modal-overlay { position: static !important; background: none !important; padding: 0 !important; display: block !important; }
+    .modal-box { box-shadow: none !important; border: none !important; max-width: 100% !important; margin: 0 !important; }
+    .tab-content { max-height: none !important; overflow: visible !important; padding: 0 !important; }
+    .tab-panel { display: block !important; margin-bottom: 24px; }
   }
 </style>
 </head>
 <body>
 
-<!-- ═══════════ LOGIN ═══════════ -->
+<!-- ═══════════ LOGIN SCREEN ═══════════ -->
 <div id="login-screen">
   <div class="login-card">
-    <h1>Admin Psikotes</h1>
-    <p>PT. Sumatera Kemasindo — masuk untuk melihat hasil peserta</p>
-    <div class="error-msg" id="login-error">Username atau password salah.</div>
-    <label>Username</label>
-    <input type="text" id="login-email" placeholder="Username" value="adm123" autocomplete="username">
-    <label>Password</label>
-    <input type="password" id="login-password" placeholder="Password" value="123" autocomplete="current-password">
-    <button class="btn" id="login-btn" onclick="login()">Masuk</button>
+    <div class="login-brand">
+      <div class="brand-icon">🏢</div>
+      <div>
+        <h1>Admin Psikotes</h1>
+        <p class="subtitle">PT. Sumatera Kemasindo</p>
+      </div>
+    </div>
+
+    <div class="error-banner" id="login-error">Username atau password salah.</div>
+
+    <div class="form-group">
+      <label for="login-email">Username</label>
+      <input type="text" id="login-email" class="form-control" placeholder="Username" value="adm123" autocomplete="username">
+    </div>
+
+    <div class="form-group">
+      <label for="login-password">Password</label>
+      <input type="password" id="login-password" class="form-control" placeholder="Password" value="123" autocomplete="current-password">
+    </div>
+
+    <button class="btn btn-primary" id="login-btn" style="width:100%; margin-top:8px;" onclick="login()">Masuk ke Dashboard</button>
+
+    <div class="login-hint">
+      🔑 Akses Cepat: Username <b>adm123</b> · Password <b>123</b>
+    </div>
   </div>
 </div>
 
-<!-- ═══════════ DASHBOARD ═══════════ -->
+<!-- ═══════════ DASHBOARD SCREEN ═══════════ -->
 <div id="dashboard-screen">
-  <div class="topbar">
-    <h1>Hasil Psikotes</h1>
-    <div class="topbar-actions">
-      <button class="btn" onclick="printRekap()" style="background:#1a2744;">🖨 Cetak Rekap Peserta</button>
-      <button class="btn btn-accent2" onclick="exportExcel()">⬇ Export ke Excel</button>
-      <button class="btn btn-outline" onclick="logout()">Keluar</button>
+  <nav class="navbar">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <div class="nav-logo">SK</div>
+        <div class="nav-title">
+          <h2>Portal Penilaian Psikotes</h2>
+          <p>PT. Sumatera Kemasindo — Dashboard Rekapitulasi</p>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <button type="button" class="btn btn-brand btn-sm" id="btn-key-manager" onclick="openKeyManager()">
+          🔑 Soal &amp; Kunci Jawaban <span class="key-count-pill" id="nav-key-count" style="display:none;">0 diubah</span>
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="loadData()">🔄 Refresh</button>
+        <button class="btn btn-primary btn-sm" onclick="printRekap()">🖨 Cetak Rekap Peserta</button>
+        <button class="btn btn-excel btn-sm" onclick="exportExcel()">⬇ Export Excel</button>
+        <button class="btn btn-outline btn-sm" onclick="logout()" style="color:var(--danger); border-color:#fecaca;">Keluar</button>
+      </div>
     </div>
-  </div>
+  </nav>
 
-  <div class="stat-row">
-    <div class="stat-card"><div class="num" id="stat-total">—</div><div class="lbl">Total Peserta</div></div>
-    <div class="stat-card"><div class="num" id="stat-avg">—</div><div class="lbl">Rata-rata Skor Psikotes</div></div>
-    <div class="stat-card"><div class="num" id="stat-tabswitch">—</div><div class="lbl">Peserta Pindah Tab (≥1x)</div></div>
-  </div>
+  <main class="dashboard-main">
+    <!-- STATS ROW -->
+    <div class="stat-grid">
+      <div class="stat-card c-primary">
+        <div class="label">Total Peserta</div>
+        <div class="value" id="stat-total">—</div>
+        <div class="desc">Mengikuti tes online</div>
+      </div>
+      <div class="stat-card c-primary">
+        <div class="label">Rata-rata Skor</div>
+        <div class="value" id="stat-avg">—</div>
+        <div class="desc" id="stat-avg-desc">Skor Psikotes Soal</div>
+      </div>
+      <div class="stat-card c-success">
+        <div class="label">Lulus Standar (≥60%)</div>
+        <div class="value" id="stat-lulus">—</div>
+        <div class="desc">Peserta memenuhi kriteria</div>
+      </div>
+      <div class="stat-card c-danger">
+        <div class="label">Di Bawah Standar</div>
+        <div class="value" id="stat-gagal">—</div>
+        <div class="desc">Nilai psikotes &lt; 60%</div>
+      </div>
+      <div class="stat-card c-warning">
+        <div class="label">Pindah Tab Browser</div>
+        <div class="value" id="stat-tabswitch">—</div>
+        <div class="desc">Terdeteksi berpindah tab (≥1x)</div>
+      </div>
+    </div>
 
-  <div class="table-wrap">
-    <div id="loading-msg">Memuat data...</div>
-    <div id="empty-msg" style="display:none;">Belum ada peserta yang mengisi tes.</div>
-    <table id="result-table" style="display:none;">
-      <thead>
-        <tr>
-          <th>Nama</th>
-          <th>Waktu Submit</th>
-          <th>Skor Psikotes</th>
-          <th>Skor Ketelitian</th>
-          <th>Pindah Tab</th>
-          <th>Detail</th>
-        </tr>
-      </thead>
-      <tbody id="result-tbody"></tbody>
-    </table>
-  </div>
+    <!-- TOOLBAR & FILTERS -->
+    <div class="toolbar">
+      <div class="filter-group">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" placeholder="Cari nama peserta, email, nomor HP..." oninput="applyFilters()">
+        </div>
+        <select id="filter-posisi" class="filter-select" onchange="applyFilters()">
+          <option value="">Semua Posisi</option>
+        </select>
+        <select id="filter-status" class="filter-select" onchange="applyFilters()">
+          <option value="">Semua Status Kelulusan</option>
+          <option value="lulus">Lulus (≥ 60%)</option>
+          <option value="gagal">Di Bawah Standar (&lt; 60%)</option>
+        </select>
+      </div>
+      <div class="counter-text" id="filter-counter">Menampilkan — peserta</div>
+    </div>
+
+    <!-- TABLE RESULT -->
+    <div class="table-card">
+      <div id="loading-msg">⏳ Memuat data dari Supabase...</div>
+      <div id="empty-msg" style="display:none;">Tidak ada data peserta yang cocok dengan pencarian.</div>
+      <div class="table-scroll">
+        <table id="result-table" style="display:none;">
+          <thead>
+            <tr>
+              <th style="width:48px;">No</th>
+              <th>Kandidat &amp; Posisi</th>
+              <th>Waktu Submit</th>
+              <th>Skor Psikotes</th>
+              <th>Skor Ketelitian</th>
+              <th>Pindah Tab</th>
+              <th>Status Hasil</th>
+              <th style="text-align:right;">Aksi Penilaian</th>
+            </tr>
+          </thead>
+          <tbody id="result-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
 </div>
 
 <!-- ═══════════ DETAIL MODAL ═══════════ -->
 <div class="modal-overlay" id="detail-modal">
   <div class="modal-box">
-    <button class="modal-close" onclick="closeDetail()">✕ Tutup</button>
-    <button class="modal-close" id="btn-print-detail" onclick="printDetail()" style="margin-right:8px;">🖨 Print</button>
-    <h2 id="detail-nama">—</h2>
-    <div class="sub" id="detail-sub">—</div>
+    <!-- CANDIDATE HEADER BANNER -->
+    <div class="modal-header">
+      <div class="candidate-info">
+        <h2 id="detail-nama">—</h2>
+        <div class="candidate-meta">
+          <span>💼 Posisi: <b id="detail-posisi" style="color:#fff;">—</b></span>
+          <span>📅 Pengerjaan: <b id="detail-waktu" style="color:#fff;">—</b></span>
+          <span>⚠️ Pindah Tab: <b id="detail-tabswitch" style="color:#fde68a;">0x</b></span>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-outline btn-sm" onclick="printDetail()" style="background:rgba(255,255,255,0.15); color:#fff; border-color:rgba(255,255,255,0.3);">
+          🖨 Cetak Lembar Penilaian
+        </button>
+        <button class="btn btn-sm" onclick="closeDetail()" style="background:#e2e8f0; color:#0f172a;">
+          ✕ Tutup
+        </button>
+      </div>
+    </div>
 
-    <div class="section-title">Biodata</div>
-    <div class="kv-grid" id="detail-biodata"></div>
+    <!-- STATS SUMMARY PILLS -->
+    <div class="modal-stats-bar">
+      <div class="modal-stat-pill">
+        <span>Skor Psikotes:</span>
+        <span class="num badge" id="modal-badge-psikotes">—</span>
+      </div>
+      <div class="modal-stat-pill">
+        <span>Ketelitian Angka:</span>
+        <span class="num badge badge-neutral" id="modal-badge-ketelitian">—</span>
+      </div>
+      <div class="modal-stat-pill">
+        <span>Evaluasi Buta Warna:</span>
+        <span class="num badge badge-neutral" id="modal-badge-ishihara">—</span>
+      </div>
+    </div>
 
-    <div class="section-title">Buta Warna (Ishihara)</div>
-    <div class="kv-grid" id="detail-butawarna"></div>
+    <!-- TABS NAVIGATION -->
+    <div class="modal-tabs">
+      <button class="tab-btn active" onclick="switchTab('soal')">
+        📝 Jawaban Soal Psikotes
+      </button>
+      <button class="tab-btn" onclick="switchTab('biodata')">
+        👤 Biodata Lengkap
+      </button>
+      <button class="tab-btn" onclick="switchTab('ishihara')">
+        👁️ Tes Buta Warna (38 Plate)
+      </button>
+      <button class="tab-btn" onclick="switchTab('ketelitian')">
+        🔍 Tes Ketelitian (15 Baris)
+      </button>
+    </div>
 
-    <div class="section-title">Jawaban Psikotes</div>
-    <div id="detail-jawaban"></div>
+    <!-- TAB CONTENTS -->
+    <div class="tab-content">
+      <!-- 1. TAB SOAL PSIKOTES (KOMPARASI LENGKAP: SOAL, REAL, KUNCI) -->
+      <div class="tab-panel active" id="panel-soal">
+        <div style="background:#f1f5f9; padding:12px 16px; border-radius:var(--radius-sm); font-size:0.84rem; color:var(--text-muted); margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <span>💡 <b>Petunjuk Penilaian:</b> Di bawah ini tersaji rincian lengkap tiap butir soal, <b>Jawaban Real</b> yang dipilih peserta saat ujian, dan <b>Kunci Jawaban Benar</b> sebagai tolak ukur evaluasi.</span>
+          <button type="button" class="btn btn-outline btn-sm" onclick="openKeyManager('psikotes')">🔑 Sesuaikan Kunci Soal</button>
+        </div>
+        <div class="soal-list" id="detail-soal-list"></div>
+      </div>
 
-    <div class="section-title">Tes Ketelitian</div>
-    <div class="kv-grid" id="detail-ketelitian"></div>
+      <!-- 2. TAB BIODATA -->
+      <div class="tab-panel" id="panel-biodata">
+        <div id="detail-biodata-content"></div>
+      </div>
+
+      <!-- 3. TAB ISHIHARA -->
+      <div class="tab-panel" id="panel-ishihara">
+        <div id="detail-ishihara-summary" style="margin-bottom:16px;"></div>
+        <table class="data-compare-table">
+          <thead>
+            <tr>
+              <th style="width:10%; text-align:center;">Plate</th>
+              <th style="width:14%; text-align:center;">Gambar Plate</th>
+              <th style="width:34%;">Jawaban Peserta (Real)</th>
+              <th style="width:28%;">Kunci Penglihatan Normal</th>
+              <th style="width:14%; text-align:center;">Evaluasi</th>
+            </tr>
+          </thead>
+          <tbody id="detail-ishihara-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- 4. TAB KETELITIAN -->
+      <div class="tab-panel" id="panel-ketelitian">
+        <div id="detail-ketelitian-summary" style="margin-bottom:16px;"></div>
+        <table class="data-compare-table">
+          <thead>
+            <tr>
+              <th style="width:6%; text-align:center;">No</th>
+              <th style="width:32%;">Kolom A</th>
+              <th style="width:32%;">Kolom B</th>
+              <th style="width:15%;">Jawaban Peserta (Real)</th>
+              <th style="width:15%;">Posisi Beda (Kunci)</th>
+            </tr>
+          </thead>
+          <tbody id="detail-ketelitian-tbody"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
+<!-- ═══════════ MODAL KELOLA SOAL & KUNCI JAWABAN ═══════════ -->
+<dialog id="key-manager-modal" class="km-dialog" aria-labelledby="km-modal-title" closedby="any">
+  <div class="km-header">
+    <div>
+      <h2 id="km-modal-title">🔑 Daftar Soal &amp; Kunci Jawaban</h2>
+      <p>Periksa seluruh soal ujian atau sesuaikan kunci jawaban bila ada yang tidak sesuai. Skor peserta langsung dihitung ulang.</p>
+    </div>
+    <button type="button" class="btn btn-outline btn-sm" onclick="closeKeyManager()" style="background:rgba(255,255,255,0.12); color:#fff; border-color:rgba(255,255,255,0.28);">✕ Tutup</button>
+  </div>
+
+  <div class="km-tabs" role="tablist" aria-label="Bagian Tes">
+    <button type="button" class="km-tab-btn active" id="km-tab-psikotes" onclick="switchKmTab('psikotes')">📝 Soal Psikotes (15)</button>
+    <button type="button" class="km-tab-btn" id="km-tab-ishihara" onclick="switchKmTab('ishihara')">👁️ Buta Warna Ishihara (38)</button>
+    <button type="button" class="km-tab-btn" id="km-tab-ketelitian" onclick="switchKmTab('ketelitian')">🔍 Ketelitian Angka (15)</button>
+  </div>
+
+  <div class="km-toolbar">
+    <input type="search" id="km-search" class="km-search" placeholder="Cari soal, pilihan jawaban, nomor plate, atau kunci..." oninput="renderCurrentKmTab()">
+    <span class="badge badge-neutral" id="km-override-summary">Semua kunci bawaan</span>
+    <button type="button" class="btn btn-outline btn-sm" onclick="resetCurrentKeyTab()">↺ Reset Tab Ini</button>
+  </div>
+
+  <div class="km-body" id="km-body">
+    <div id="km-panel-psikotes"></div>
+    <div id="km-panel-ishihara" style="display:none;"></div>
+    <div id="km-panel-ketelitian" style="display:none;"></div>
+  </div>
+
+  <div class="km-footer">
+    <div class="km-save-status" id="km-save-feedback">Perubahan disimpan otomatis ke browser ini.</div>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button type="button" class="btn btn-outline btn-sm" id="km-reset-all-btn" onclick="handleResetAllClick()" style="color:var(--danger); border-color:#fecaca;">↺ Reset Semua Default</button>
+      <button type="button" class="btn btn-outline btn-sm" onclick="closeKeyManager()">Tutup</button>
+      <button type="button" class="btn btn-brand btn-sm" onclick="saveAndCloseKeyManager()" autofocus>💾 Simpan &amp; Hitung Ulang</button>
+    </div>
+  </div>
+</dialog>
+
 <script>
 // ════════════════════════════════════════════════
-//  CONFIG (harus sama dengan index.html)
+//  CONFIG SUPABASE
 // ════════════════════════════════════════════════
 const SUPABASE_URL = "https://bhrkpavpodyceqflbalf.supabase.co";
 const SUPABASE_KEY = "sb_publishable_6H_HEq-ZS0kM5XqgsTOOgw_NcmCAQ2K";
 const SUPABASE_TABLE = "psikotes_hasil";
 
-// Kunci jawaban tes ketelitian (harus sama persis dengan index.html)
-const KETELITIAN_KUNCI = {
-  1:'4,6', 2:'3,8,10', 3:'2,5,8', 4:'4,9', 5:'3,4,6,7,9',
-  6:'3,4,9', 7:'3,5,8', 8:'1,5,6,8', 9:'5,7,10', 10:'2,4,10',
-  11:'3,4,7,9', 12:'2,4,5,9,10', 13:'2,3,8,9', 14:'3,6,10', 15:'1,6,9',
+// ════════════════════════════════════════════════
+//  DATA MASTER SOAL & KUNCI JAWABAN (DAPAT DISESUAIKAN)
+// ════════════════════════════════════════════════
+const HURUF_OPSI = ['A', 'B', 'C', 'D', 'E'];
+const CUSTOM_KEYS_STORAGE_KEY = 'psikotes_custom_keys_v1';
+
+const DEFAULT_SOAL_DATA = [
+  {
+    no: 1, id: "q1", kategori: "Logika Verbal",
+    soal: "Lawan kata dari 'ALPHA' adalah...",
+    opsi: ["Absen", "Lalai", "Hadir", "Lambat", "Bolos"],
+    jawaban_benar: "C"
+  },
+  {
+    no: 2, id: "q2", kategori: "Analogi",
+    soal: "... : Wisuda = Pertunangan : ...",
+    opsi: ["Toga - Cincin", "Gelar - Pelaminan", "Berhasil - Cinta", "Kuliah - Pernikahan", "Pendidikan - Cinta"],
+    jawaban_benar: "A"
+  },
+  {
+    no: 3, id: "q3", kategori: "Logika Numerik",
+    soal: "Seorang pengrajin sepatu membuat 80 pasang sepatu dalam 23 hari. Jika pengrajin tersebut bekerja selama 30 hari, berapa pasang sepatu yang akan dibuat?",
+    opsi: ["94 pasang", "104 pasang", "110 pasang", "115 pasang", "120 pasang"],
+    jawaban_benar: "B"
+  },
+  {
+    no: 4, id: "q4", kategori: "Deret Angka",
+    soal: "Temukan pola dan lengkapi deret berikut: 4, 7, 10, ?, 16, ?, ?",
+    opsi: ["11, 15, 19", "12, 14, 17", "13, 19, 22", "15, 20, 24", "13, 16, 19"],
+    jawaban_benar: "E"
+  },
+  {
+    no: 5, id: "q5", kategori: "Silogisme",
+    soal: "Nana dan Nini suka makan siomay. Ujang dan Nana suka makan es dawet. Siapa yang suka makan siomay DAN es dawet?",
+    opsi: ["Ujang", "Nini", "Nana", "Nana dan Nini", "Ujang dan Nini"],
+    jawaban_benar: "C"
+  },
+  {
+    no: 6, id: "q6", kategori: "Berhitung",
+    soal: "Berapakah hasil dari: ((75 + 15) × (25 − 15)) ÷ 3 ?",
+    opsi: ["250", "300", "275", "320", "400"],
+    jawaban_benar: "B"
+  },
+  {
+    no: 7, id: "q7", kategori: "Berhitung",
+    soal: "Berapakah hasil dari: 1000 × 10 ÷ 1000 − 1 ?",
+    opsi: ["5", "9", "10", "0", "100"],
+    jawaban_benar: "B"
+  },
+  {
+    no: 8, id: "q8", kategori: "Berhitung",
+    soal: "Berapakah hasil dari: 6,7 × 15 ?",
+    opsi: ["95,5", "100,5", "98,5", "102,0", "100,0"],
+    jawaban_benar: "B"
+  },
+  {
+    no: 9, id: "q9", kategori: "Berhitung",
+    soal: "Berapakah hasil dari: √100 × 4 ÷ 5 ?",
+    opsi: ["6", "7", "8", "9", "10"],
+    jawaban_benar: "C"
+  },
+  {
+    no: 10, id: "q10", kategori: "Berhitung",
+    soal: "Berapakah hasil dari: 12³ (12 pangkat 3)?",
+    opsi: ["1.444", "1.728", "1.200", "1.596", "2.000"],
+    jawaban_benar: "B"
+  },
+  {
+    no: 11, id: "q11", kategori: "Konversi Satuan",
+    soal: "5 km = ... mm?",
+    opsi: ["500.000 mm", "5.000.000 mm", "50.000 mm", "500 mm", "5.000 mm"],
+    jawaban_benar: "B"
+  },
+  {
+    no: 12, id: "q12", kategori: "Konversi Satuan",
+    soal: "9 m² = ... cm²?",
+    opsi: ["900 cm²", "9.000 cm²", "90.000 cm²", "900.000 cm²", "9.000.000 cm²"],
+    jawaban_benar: "C"
+  },
+  {
+    no: 13, id: "q13", kategori: "Berhitung",
+    soal: "Berapakah 20% dari 2.000?",
+    opsi: ["200", "300", "400", "500", "600"],
+    jawaban_benar: "C"
+  },
+  {
+    no: 14, id: "q14", kategori: "Konversi Waktu",
+    soal: "15 jam 43 menit = ... detik?",
+    opsi: ["54.000 detik", "56.580 detik", "56.800 detik", "55.380 detik", "57.180 detik"],
+    jawaban_benar: "B"
+  },
+  {
+    no: 15, id: "q15", kategori: "Berhitung",
+    soal: "Berapakah hasil dari: 144 ÷ 12² (144 dibagi 12 kuadrat)?",
+    opsi: ["0,5", "1", "1,5", "2", "2,5"],
+    jawaban_benar: "B"
+  }
+];
+
+const DEFAULT_ISHIHARA_KUNCI = {
+  1: '12', 2: '8', 3: '29', 4: '5', 5: '74', 6: '7', 7: '45', 8: '2', 9: '4', 10: '16',
+  11: 'Tidak ada', 12: '35', 13: 'Tidak ada', 14: 'Tidak ada', 15: 'Tidak ada', 16: '26',
+  17: 'Tidak ada', 18: 'Tidak ada', 19: 'Tidak ada', 20: '42', 21: 'Tidak ada', 22: 'Tidak ada',
+  23: 'Tidak ada', 24: 'Tidak ada', 25: 'Tidak ada', 26: 'Ungu & Merah', 27: 'Orange',
+  28: 'Orange', 29: 'Hijau', 30: 'Hijau', 31: 'Hijau',
+  32: 'Orange', 33: 'Hijau', 34: 'Hijau', 35: 'Merah', 36: 'Pink', 37: 'Orange', 38: 'Merah'
 };
 
-let accessToken = null;
+function isIshiharaMatch(userVal, kunciVal) {
+  if (userVal === undefined || userVal === null || kunciVal === undefined || kunciVal === null) return false;
+  let u = String(userVal).trim().toLowerCase();
+  let k = String(kunciVal).trim().toLowerCase();
+  if (!u || !k) return false;
+
+  // 1. Cocok sama persis
+  if (u === k) return true;
+
+  // 2. Jika kunci normal menyatakan "tidak ada" atau sejenisnya
+  const isKunciTidakAda = k.includes('tidak ada') || k === '-' || k === '_' || k === 'kosong' || k === 'none';
+  if (isKunciTidakAda) {
+    const noneAliases = [
+      '-', '--', '---', '—', '–',
+      '_', '__', '___',
+      'tidak ada', 'tidak ada angka', 'tidak ada garis', 'tdk ada', 'tidak diisi', 'tidak di jawab', 'tidak dijawab',
+      'tidak kelihatan', 'tidak terlihat', 'kosong', 'none', 'nihil', 'tidak'
+    ];
+    if (noneAliases.includes(u)) return true;
+    if (/^[-_—–\.\s]+$/.test(u)) return true;
+    if (u.includes('tidak ada') || u.includes('tdk ada') || u.includes('tidak diisi') || u.includes('tidak terlihat') || u.includes('tidak kelihatan')) return true;
+  }
+
+  // 3. Normalisasi teks warna (buang prefiks "ada | " atau "garis ")
+  const cleanColor = s => s.replace(/^(ada\s*\|\s*|garis\s*)/i, '').trim();
+  const uClean = cleanColor(u);
+  const kClean = cleanColor(k);
+  if (uClean === kClean) return true;
+
+  // Padanan Orange / Oranye / Oren / Jingga
+  const isOrange = s => /^(orange|oranye|oren|jingga|orangen)$/i.test(s) || s.includes('orange') || s.includes('oranye') || s.includes('oren') || s.includes('jingga');
+  if (isOrange(kClean) && isOrange(uClean)) return true;
+
+  // Padanan Hijau (hijau, hijau tua, hijau muda)
+  const isHijau = s => s === 'hijau' || s.includes('hijau');
+  if (isHijau(kClean) && isHijau(uClean)) return true;
+
+  // Padanan Merah (hanya jika kClean tepat merah)
+  if (kClean === 'merah' && uClean === 'merah') return true;
+
+  // Padanan Pink / Merah Muda
+  const isPink = s => s === 'pink' || s.includes('pink') || s.includes('merah muda');
+  if (isPink(kClean) && isPink(uClean)) return true;
+
+  // 4. Normalisasi karakter pemisah (cth: "Ungu & Merah" vs "Ungu dan Merah")
+  const norm = s => s.replace(/&/g, 'dan').replace(/[^a-z0-9]/g, '');
+  if (norm(uClean) && norm(uClean) === norm(kClean)) return true;
+
+  return false;
+}
+
+const ishiharaPlates = [
+  { plate: 1,  label: 'Angka yang terlihat',   jawaban_normal: '12',        type: 'number', colors: {bg:'#4a4a4a',fg:'#e8522a'} },
+  { plate: 2,  label: 'Angka yang terlihat',   jawaban_normal: '8',         type: 'number', colors: {bg:'#8b7355',fg:'#e8a87c'} },
+  { plate: 3,  label: 'Angka yang terlihat',   jawaban_normal: '29',        type: 'number', colors: {bg:'#7a8a5a',fg:'#e8522a'} },
+  { plate: 4,  label: 'Angka yang terlihat',   jawaban_normal: '5',         type: 'number', colors: {bg:'#6b7a4a',fg:'#e8a87c'} },
+  { plate: 5,  label: 'Angka yang terlihat',   jawaban_normal: '74',        type: 'number', colors: {bg:'#5a6a4a',fg:'#e87a3a'} },
+  { plate: 6,  label: 'Angka yang terlihat',   jawaban_normal: '7',         type: 'number', colors: {bg:'#e8a020',fg:'#d43020'} },
+  { plate: 7,  label: 'Angka yang terlihat',   jawaban_normal: '45',        type: 'number', colors: {bg:'#e8b040',fg:'#4a8a4a'} },
+  { plate: 8,  label: 'Angka yang terlihat',   jawaban_normal: '2',         type: 'number', colors: {bg:'#e0983a',fg:'#4a7a4a'} },
+  { plate: 9,  label: 'Angka yang terlihat',   jawaban_normal: '4',         type: 'number', colors: {bg:'#e8b040',fg:'#4a8a4a'} },
+  { plate: 10, label: 'Angka yang terlihat',   jawaban_normal: '16',        type: 'number', colors: {bg:'#8a9a6a',fg:'#e87a3a'} },
+  { plate: 11, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#7a8a6a',fg:'#e07840'} },
+  { plate: 12, label: 'Angka yang terlihat',   jawaban_normal: '35',        type: 'number', colors: {bg:'#8a8a5a',fg:'#e07840'} },
+  { plate: 13, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#7a8a6a',fg:'#6a9060'} },
+  { plate: 14, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#e8c060',fg:'#c04030'} },
+  { plate: 15, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#e8c060',fg:'#4a8a4a'} },
+  { plate: 16, label: 'Angka yang terlihat',   jawaban_normal: '26',        type: 'number', colors: {bg:'#e8a040',fg:'#4a8050'} },
+  { plate: 17, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#e8a040',fg:'#608060'} },
+  { plate: 18, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#608050',fg:'#e06030'} },
+  { plate: 19, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#e07840',fg:'#5a7850'} },
+  { plate: 20, label: 'Angka yang terlihat',   jawaban_normal: '42',        type: 'number', colors: {bg:'#706050',fg:'#c05030'} },
+  { plate: 21, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#706050',fg:'#e07040'} },
+  { plate: 22, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#303030',fg:'#c03030'} },
+  { plate: 23, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#303030',fg:'#c03030'} },
+  { plate: 24, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#303030',fg:'#c03030'} },
+  { plate: 25, label: 'Angka yang terlihat',   jawaban_normal: 'Tidak ada', type: 'number', colors: {bg:'#404040',fg:'#c03030'} },
+  { plate: 26, label: 'Warna garis yang terlihat', jawaban_normal: 'Ungu & Merah', type: 'color', colors: {bg:'#404040',fg:'#c03030'} },
+  { plate: 27, label: 'Warna garis yang terlihat', jawaban_normal: 'Orange', type: 'color', colors: {bg:'#404040',fg:'#e87a20'} },
+  { plate: 28, label: 'Warna garis yang terlihat', jawaban_normal: 'Orange', type: 'color', colors: {bg:'#5a8050',fg:'#e87a20'} },
+  { plate: 29, label: 'Apa yang terlihat',         jawaban_normal: 'Hijau', type: 'color', colors: {bg:'#c08050',fg:'#5a7850'} },
+  { plate: 30, label: 'Warna garis yang terlihat', jawaban_normal: 'Oranye & Merah Muda', type: 'color', colors: {bg:'#e8b840',fg:'#5a8050'} },
+  { plate: 31, label: 'Warna garis yang terlihat', jawaban_normal: 'Oranye & Merah Muda', type: 'color', colors: {bg:'#e8a030',fg:'#5a8050'} },
+  { plate: 32, label: 'Warna garis yang terlihat', jawaban_normal: 'Ungu', type: 'color', colors: {bg:'#8a9060',fg:'#e07040'} },
+  { plate: 33, label: 'Warna garis yang terlihat', jawaban_normal: 'Ungu', type: 'color', colors: {bg:'#8a9060',fg:'#607050'} },
+  { plate: 34, label: 'Warna garis yang terlihat', jawaban_normal: 'Ungu', type: 'color', colors: {bg:'#e8a040',fg:'#5a8050'} },
+  { plate: 35, label: 'Warna garis yang terlihat', jawaban_normal: 'Jingga', type: 'color', colors: {bg:'#e8a040',fg:'#c04030'} },
+  { plate: 36, label: 'Warna garis yang terlihat', jawaban_normal: 'Merah & Hijau', type: 'color', colors: {bg:'#8a8a50',fg:'#e07050'} },
+  { plate: 37, label: 'Warna garis yang terlihat', jawaban_normal: 'Merah & Hijau', type: 'color', colors: {bg:'#8a8050',fg:'#e07840'} },
+  { plate: 38, label: 'Warna garis yang terlihat', jawaban_normal: 'Merah & Ungu', type: 'color', colors: {bg:'#4a5a6a',fg:'#e05030'} },
+];
+
+const DIGIT_MAP = {
+  '0': [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,1,1],[1,0,1,0,1],[1,1,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+  '1': [[0,0,1,0,0],[0,1,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,0,1,0,0],[0,1,1,1,0]],
+  '2': [[0,1,1,1,0],[1,0,0,0,1],[0,0,0,0,1],[0,0,0,1,0],[0,0,1,0,0],[0,1,0,0,0],[1,1,1,1,1]],
+  '3': [[1,1,1,1,0],[0,0,0,0,1],[0,0,0,0,1],[0,1,1,1,0],[0,0,0,0,1],[0,0,0,0,1],[1,1,1,1,0]],
+  '4': [[0,0,0,1,0],[0,0,1,1,0],[0,1,0,1,0],[1,0,0,1,0],[1,1,1,1,1],[0,0,0,1,0],[0,0,0,1,0]],
+  '5': [[1,1,1,1,1],[1,0,0,0,0],[1,1,1,1,0],[0,0,0,0,1],[0,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+  '6': [[0,1,1,1,0],[1,0,0,0,0],[1,0,0,0,0],[1,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+  '7': [[1,1,1,1,1],[0,0,0,0,1],[0,0,0,1,0],[0,0,1,0,0],[0,1,0,0,0],[0,1,0,0,0],[0,1,0,0,0]],
+  '8': [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,0]],
+  '9': [[0,1,1,1,0],[1,0,0,0,1],[1,0,0,0,1],[0,1,1,1,1],[0,0,0,0,1],[0,0,0,0,1],[0,1,1,1,0]],
+};
+
+function seededRandom(seed) {
+  let s = seed;
+  return function() {
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    return ((s >>> 0) / 0xffffffff);
+  };
+}
+
+function colorVariation(hex, rng, amount) {
+  const r = parseInt(hex.slice(1,3), 16);
+  const g = parseInt(hex.slice(3,5), 16);
+  const b = parseInt(hex.slice(5,7), 16);
+  const d = (rng() - 0.5) * amount * 2;
+  const clamp = v => Math.max(0, Math.min(255, Math.round(v + d)));
+  return `rgb(${clamp(r)},${clamp(g)},${clamp(b)})`;
+}
+
+function generateFigureDotsScaled(plateNum, rng, W, H, scale) {
+  const plate = ishiharaPlates[plateNum - 1];
+  if (!plate) return [];
+  const answer = plate.jawaban_normal;
+  const dots = [];
+
+  if (plate.type === 'color' || plate.type === 'shape') {
+    const cx = W / 2, cy = H / 2;
+    for (let t = 0; t < Math.PI * 1.5; t += 0.09) {
+      const x = cx + Math.cos(t) * (40 * scale + Math.sin(t * 3) * 15 * scale);
+      const y = cy + Math.sin(t) * (40 * scale + Math.cos(t * 3) * 15 * scale);
+      if (Math.hypot(x - cx, y - cy) < cx - 10 * scale) {
+        dots.push({ x: x + (rng() - 0.5) * 5 * scale, y: y + (rng() - 0.5) * 5 * scale, r: (4 + rng() * 4) * scale });
+      }
+    }
+    return dots;
+  }
+
+  const digits = answer.replace(/[^0-9]/g, '');
+  if (!digits) return dots;
+
+  const cellSize = 16 * scale;
+  const gap = 4 * scale;
+  const totalW = digits.length * 5 * cellSize + (digits.length - 1) * gap;
+  const startX = (W - totalW) / 2;
+  const startY = (H - 7 * cellSize) / 2;
+
+  for (let d = 0; d < digits.length; d++) {
+    const map = DIGIT_MAP[digits[d]];
+    if (!map) continue;
+    const offX = startX + d * (5 * cellSize + gap);
+    for (let row = 0; row < 7; row++) {
+      for (let col = 0; col < 5; col++) {
+        if (map[row][col]) {
+          const bx = offX + col * cellSize + cellSize / 2;
+          const by = startY + row * cellSize + cellSize / 2;
+          const count = 2 + Math.floor(rng() * 2);
+          for (let k = 0; k < count; k++) {
+            const jx = bx + (rng() - 0.5) * cellSize * 0.9;
+            const jy = by + (rng() - 0.5) * cellSize * 0.9;
+            dots.push({ x: jx, y: jy, r: (3.5 + rng() * 4.5) * scale });
+          }
+        }
+      }
+    }
+  }
+  return dots;
+}
+
+const ishiharaImageCache = {};
+
+function getIshiharaPlateUrl(plateNum) {
+  if (ishiharaImageCache[plateNum]) return ishiharaImageCache[plateNum];
+
+  const plate = ishiharaPlates[plateNum - 1];
+  if (!plate) return '';
+
+  const size = 140;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const W = size, H = size;
+  const R = W / 2;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Clip circular plate
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(R, R, R - 2, 0, Math.PI * 2);
+  ctx.clip();
+
+  // Background base
+  ctx.fillStyle = plate.colors.bg;
+  ctx.fillRect(0, 0, W, H);
+
+  const rng = seededRandom(plate.plate * 137);
+  const dots = [];
+  const scale = size / 220;
+
+  // Background dots
+  const bgCount = 200;
+  for (let i = 0; i < bgCount; i++) {
+    let x, y, r, tries = 0;
+    do {
+      r = (3.5 + rng() * 6.5) * scale;
+      x = r + rng() * (W - 2 * r);
+      y = r + rng() * (H - 2 * r);
+      tries++;
+    } while (tries < 16 && (Math.hypot(x - R, y - R) > R - r || dots.some(d => Math.hypot(d.x - x, d.y - y) < d.r + r + 1)));
+    if (Math.hypot(x - R, y - R) <= R - r) {
+      const variation = colorVariation(plate.colors.bg, rng, 28);
+      dots.push({ x, y, r, color: variation });
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = variation;
+      ctx.fill();
+    }
+  }
+
+  // Foreground figure dots
+  const figureDots = generateFigureDotsScaled(plate.plate, rng, W, H, scale);
+  for (const fd of figureDots) {
+    const variation = colorVariation(plate.colors.fg, rng, 24);
+    ctx.beginPath();
+    ctx.arc(fd.x, fd.y, fd.r, 0, Math.PI * 2);
+    ctx.fillStyle = variation;
+    ctx.fill();
+  }
+
+  ctx.restore();
+
+  // Border outline
+  ctx.beginPath();
+  ctx.arc(R, R, R - 1.5, 0, Math.PI * 2);
+  ctx.strokeStyle = '#94a3b8';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  try {
+    ishiharaImageCache[plateNum] = canvas.toDataURL('image/png');
+  } catch(e) {
+    ishiharaImageCache[plateNum] = '';
+  }
+
+  return ishiharaImageCache[plateNum];
+}
+
+const KETELITIAN_DATA = [
+  { no:1,  a:'8 7 9 5 5 3 7 6 9 0', b:'8 7 9 2 5 2 7 6 9 0', jawaban:'4,6' },
+  { no:2,  a:'3 3 1 5 4 8 7 2 1 3', b:'3 3 2 5 4 8 7 4 1 2', jawaban:'3,8,10' },
+  { no:3,  a:'1 7 0 6 2 8 0 6 5 9', b:'1 6 0 6 1 8 0 9 5 9', jawaban:'2,5,8' },
+  { no:4,  a:'7 8 5 8 4 2 1 0 2 6', b:'7 8 5 5 4 2 1 0 0 6', jawaban:'4,9' },
+  { no:5,  a:'6 3 9 6 7 6 5 4 3 2', b:'6 3 7 2 7 8 6 4 2 2', jawaban:'3,4,6,7,9' },
+  { no:6,  a:'9 7 5 3 5 9 8 4 0 1', b:'9 7 6 6 5 9 8 4 3 1', jawaban:'3,4,9' },
+  { no:7,  a:'2 7 6 8 5 4 1 0 7 6', b:'2 7 8 8 6 4 1 2 7 6', jawaban:'3,5,8' },
+  { no:8,  a:'9 4 8 7 2 6 2 0 3 5', b:'6 4 8 7 6 3 2 5 3 5', jawaban:'1,5,6,8' },
+  { no:9,  a:'8 3 6 7 7 4 5 7 2 1', b:'8 3 6 7 6 4 8 7 2 4', jawaban:'5,7,10' },
+  { no:10, a:'3 5 8 1 4 6 7 3 1 2', b:'3 6 8 6 4 6 7 3 1 3', jawaban:'2,4,10' },
+  { no:11, a:'1 3 7 5 4 2 9 7 6 5', b:'1 3 6 8 4 2 6 7 0 5', jawaban:'3,4,7,9' },
+  { no:12, a:'4 7 8 5 8 3 9 2 0 7', b:'4 5 8 6 0 3 9 2 8 3', jawaban:'2,4,5,9,10' },
+  { no:13, a:'2 7 8 3 7 6 5 2 3 1', b:'2 8 9 3 7 6 5 3 2 1', jawaban:'2,3,8,9' },
+  { no:14, a:'6 2 7 7 8 3 9 5 4 2', b:'6 2 3 7 8 8 9 5 4 0', jawaban:'3,6,10' },
+  { no:15, a:'7 5 4 9 6 0 2 9 5 3', b:'6 5 4 9 6 3 2 9 0 3', jawaban:'1,6,9' },
+];
+const DEFAULT_KETELITIAN_DATA = KETELITIAN_DATA;
+
 let allData = [];
+let filteredData = [];
+let currentDetailIndex = null;
+let currentKmTab = 'psikotes';
+let resetAllConfirmTimer = null;
+let resetAllPendingConfirm = false;
+
+let customKeyOverrides = {
+  psikotes: {},
+  ishihara: {},
+  ketelitian: {}
+};
 
 // ════════════════════════════════════════════════
-//  LOGIN (Hardcoded Credentials)
+//  MANAJEMEN & EVALUASI KUNCI JAWABAN DINAMIS
 // ════════════════════════════════════════════════
-const ADMIN_USER = "adm123";
-const ADMIN_PASS = "123";
+function loadCustomKeys() {
+  try {
+    const raw = localStorage.getItem(CUSTOM_KEYS_STORAGE_KEY);
+    if (!raw) {
+      customKeyOverrides = { psikotes: {}, ishihara: {}, ketelitian: {} };
+    } else {
+      const parsed = JSON.parse(raw);
+      customKeyOverrides = {
+        psikotes: (parsed && typeof parsed.psikotes === 'object' && parsed.psikotes) ? { ...parsed.psikotes } : {},
+        ishihara: (parsed && typeof parsed.ishihara === 'object' && parsed.ishihara) ? { ...parsed.ishihara } : {},
+        ketelitian: (parsed && typeof parsed.ketelitian === 'object' && parsed.ketelitian) ? { ...parsed.ketelitian } : {},
+      };
+    }
+  } catch (e) {
+    customKeyOverrides = { psikotes: {}, ishihara: {}, ketelitian: {} };
+  }
+  sanitizeCustomKeys();
+  updateCustomKeyIndicators();
+}
+
+function sanitizeCustomKeys() {
+  DEFAULT_SOAL_DATA.forEach(q => {
+    const v = customKeyOverrides.psikotes[q.id];
+    if (!v || !HURUF_OPSI.includes(v) || v === q.jawaban_benar) {
+      delete customKeyOverrides.psikotes[q.id];
+    }
+  });
+  for (let p = 1; p <= 38; p++) {
+    const k = String(p);
+    const v = customKeyOverrides.ishihara[k];
+    const def = DEFAULT_ISHIHARA_KUNCI[p] || '';
+    if (v === undefined || v === null || String(v).trim() === '' || String(v).trim() === def.trim()) {
+      delete customKeyOverrides.ishihara[k];
+    } else {
+      customKeyOverrides.ishihara[k] = String(v).trim();
+    }
+  }
+  DEFAULT_KETELITIAN_DATA.forEach(r => {
+    const k = String(r.no);
+    const v = customKeyOverrides.ketelitian[k];
+    if (v === undefined || v === null || String(v).trim() === '' || String(v).replace(/\s+/g, '') === r.jawaban.replace(/\s+/g, '')) {
+      delete customKeyOverrides.ketelitian[k];
+    } else {
+      customKeyOverrides.ketelitian[k] = String(v).trim();
+    }
+  });
+}
+
+function persistCustomKeys() {
+  sanitizeCustomKeys();
+  try {
+    const total = getCustomKeyCount();
+    if (total === 0) {
+      localStorage.removeItem(CUSTOM_KEYS_STORAGE_KEY);
+    } else {
+      localStorage.setItem(CUSTOM_KEYS_STORAGE_KEY, JSON.stringify(customKeyOverrides));
+    }
+  } catch (e) {
+    console.warn('Gagal menyimpan kunci ke localStorage:', e);
+  }
+  updateCustomKeyIndicators();
+}
+
+function getCustomKeyCount(section) {
+  if (section) {
+    return Object.keys(customKeyOverrides[section] || {}).length;
+  }
+  return (
+    Object.keys(customKeyOverrides.psikotes || {}).length +
+    Object.keys(customKeyOverrides.ishihara || {}).length +
+    Object.keys(customKeyOverrides.ketelitian || {}).length
+  );
+}
+
+function updateCustomKeyIndicators() {
+  const total = getCustomKeyCount();
+  const navPill = document.getElementById('nav-key-count');
+  if (navPill) {
+    navPill.textContent = `${total} diubah`;
+    navPill.style.display = total > 0 ? 'inline-flex' : 'none';
+  }
+  const summaryEl = document.getElementById('km-override-summary');
+  if (summaryEl) {
+    if (total > 0) {
+      summaryEl.textContent = `✏️ ${total} kunci disesuaikan dari bawaan`;
+      summaryEl.className = 'badge badge-warning';
+    } else {
+      summaryEl.textContent = 'Semua kunci sesuai bawaan';
+      summaryEl.className = 'badge badge-neutral';
+    }
+  }
+}
+
+function getActivePsikotesKeyLetter(qId) {
+  const def = DEFAULT_SOAL_DATA.find(q => q.id === qId);
+  const ov = customKeyOverrides.psikotes[qId];
+  if (ov && HURUF_OPSI.includes(ov)) return ov;
+  return def ? def.jawaban_benar : 'A';
+}
+
+function getActivePsikotesKeyText(masterQ) {
+  if (!masterQ) return '';
+  const letter = getActivePsikotesKeyLetter(masterQ.id);
+  const idx = HURUF_OPSI.indexOf(letter);
+  return (idx >= 0 && masterQ.opsi[idx] !== undefined) ? masterQ.opsi[idx] : '';
+}
+
+function getActiveIshiharaKey(plateNum) {
+  const ov = customKeyOverrides.ishihara[String(plateNum)];
+  if (ov !== undefined && ov !== '') return ov;
+  return DEFAULT_ISHIHARA_KUNCI[plateNum] || '—';
+}
+
+function getActiveKetelitianKey(no) {
+  const ov = customKeyOverrides.ketelitian[String(no)];
+  if (ov !== undefined && ov !== '') return ov;
+  const row = DEFAULT_KETELITIAN_DATA.find(r => r.no === Number(no));
+  return row ? row.jawaban : '';
+}
+
+function normAnsText(val) {
+  return String(val ?? '').trim().replace(/\s+/g, ' ').toLowerCase();
+}
+
+function findMasterSoal(qKey, item) {
+  const byId = DEFAULT_SOAL_DATA.find(q => q.id === qKey);
+  if (byId) return byId;
+  const itemSoalNorm = normAnsText(item?.soal);
+  if (!itemSoalNorm) return null;
+  return DEFAULT_SOAL_DATA.find(q => normAnsText(q.soal) === itemSoalNorm) || null;
+}
+
+function isPsikotesUnanswered(val) {
+  if (val === undefined || val === null) return true;
+  const n = normAnsText(val);
+  return !n || n === 'tidak dijawab' || n === '-';
+}
+
+function evaluatePsikotes(row) {
+  const jwObj = row?.jawaban || {};
+  const entries = Object.entries(jwObj);
+  if (!entries.length) {
+    const totalFallback = row?.total_soal ?? DEFAULT_SOAL_DATA.length;
+    const skorFallback = row?.skor ?? 0;
+    const pctFallback = totalFallback ? Math.round((skorFallback / totalFallback) * 100) : 0;
+    return {
+      skor: skorFallback,
+      total: totalFallback,
+      pct: pctFallback,
+      isLulus: Boolean(totalFallback && (skorFallback / totalFallback) >= 0.6),
+      items: []
+    };
+  }
+
+  const sorted = entries.sort(([, a], [, b]) => (a?.no_urut || 0) - (b?.no_urut || 0));
+  let skor = 0;
+
+  const items = sorted.map(([qKey, item], idx) => {
+    const masterQ = findMasterSoal(qKey, item);
+    const pilihanUser = item?.pilihan_user || 'Tidak Dijawab';
+    const unanswered = isPsikotesUnanswered(item?.pilihan_user);
+
+    let kunciLetter = null;
+    let defaultLetter = null;
+    let kunciText = item?.jawaban_benar || '—';
+    let isCustomized = false;
+    let isBenar = item?.benar === true;
+
+    if (masterQ) {
+      defaultLetter = masterQ.jawaban_benar;
+      kunciLetter = getActivePsikotesKeyLetter(masterQ.id);
+      isCustomized = kunciLetter !== defaultLetter;
+      kunciText = getActivePsikotesKeyText(masterQ) || kunciText;
+      if (unanswered) {
+        isBenar = false;
+      } else {
+        const uNorm = normAnsText(item.pilihan_user);
+        const kNorm = normAnsText(kunciText);
+        isBenar = Boolean(uNorm && kNorm && (uNorm === kNorm || uNorm === kunciLetter.toLowerCase()));
+      }
+    }
+
+    if (isBenar) skor++;
+    return {
+      qKey,
+      masterId: masterQ ? masterQ.id : null,
+      no_urut: item?.no_urut || (idx + 1),
+      kategori: item?.kategori || masterQ?.kategori || 'Umum',
+      soal: item?.soal || masterQ?.soal || 'Soal tidak ditemukan',
+      pilihan_user: pilihanUser,
+      jawaban_benar: kunciText,
+      kunci_letter: kunciLetter,
+      default_letter: defaultLetter,
+      is_customized: isCustomized,
+      benar: isBenar
+    };
+  });
+
+  const total = row?.total_soal ?? (items.length || DEFAULT_SOAL_DATA.length);
+  const pct = total ? Math.round((skor / total) * 100) : 0;
+  const isLulus = Boolean(total && (skor / total) >= 0.6);
+  return { skor, total, pct, isLulus, items };
+}
+
+function evaluateIshihara(row) {
+  const bw = row?.buta_warna || {};
+  const hasData = Object.keys(bw).length > 0;
+  let benarCount = 0;
+  const items = [];
+
+  for (let p = 1; p <= 38; p++) {
+    const userVal = (bw[`plate_${p}`] || 'Tidak diisi').toString().trim();
+    const defaultKey = DEFAULT_ISHIHARA_KUNCI[p] || '—';
+    const kunciVal = getActiveIshiharaKey(p);
+    const isCocok = isIshiharaMatch(userVal, kunciVal);
+    if (isCocok) benarCount++;
+    items.push({
+      plate: p,
+      userVal,
+      kunciVal,
+      defaultKey,
+      isCustomized: kunciVal !== defaultKey,
+      isCocok
+    });
+  }
+
+  return {
+    hasData,
+    benarCount,
+    total: 38,
+    isNormal: benarCount >= 34,
+    items
+  };
+}
+
+function evaluateKetelitian(row) {
+  const ket = row?.ketelitian || {};
+  const hasRowEntries = DEFAULT_KETELITIAN_DATA.some(r => ket[`no_${r.no}`] !== undefined);
+  const total = ket._total !== undefined ? ket._total : DEFAULT_KETELITIAN_DATA.length;
+  let benarCount = 0;
+
+  const items = DEFAULT_KETELITIAN_DATA.map(defRow => {
+    const rawVal = ket[`no_${defRow.no}`];
+    const userVal = (rawVal || 'Tidak diisi').toString().trim();
+    const rawPrintVal = (rawVal || '-').toString().trim();
+    const defaultKey = defRow.jawaban.trim();
+    const kunciVal = getActiveKetelitianKey(defRow.no).trim();
+    const isBenar = userVal.replace(/\s+/g, '') === kunciVal.replace(/\s+/g, '');
+    if (isBenar) benarCount++;
+    return {
+      no: defRow.no,
+      a: defRow.a,
+      b: defRow.b,
+      userVal,
+      rawPrintVal,
+      kunciVal,
+      defaultKey,
+      isCustomized: kunciVal.replace(/\s+/g, '') !== defaultKey.replace(/\s+/g, ''),
+      isBenar
+    };
+  });
+
+  const hasData = hasRowEntries || ket._skor !== undefined;
+  const skor = hasRowEntries ? benarCount : (ket._skor ?? 0);
+  const pct = total ? Math.round((skor / total) * 100) : 0;
+  return { hasData, skor, total, pct, items };
+}
+
+function refreshAllViews() {
+  if (allData.length) {
+    applyFilters();
+  }
+  const detailModal = document.getElementById('detail-modal');
+  if (detailModal && detailModal.classList.contains('show') && currentDetailIndex !== null) {
+    refreshOpenDetailModal();
+  }
+}
+
+// ════════════════════════════════════════════════
+//  LOGIN & AUTH
+// ════════════════════════════════════════════════
+const VALID_USERS = ["adm123", "admin", "admin123"];
+const VALID_PASS = ["123", "admin123", "admin"];
 
 function login() {
-  const user = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
+  const user = (document.getElementById('login-email').value || '').trim().toLowerCase();
+  const password = (document.getElementById('login-password').value || '').trim();
   const errEl = document.getElementById('login-error');
   errEl.classList.remove('show');
 
-  if (user === ADMIN_USER && password === ADMIN_PASS) {
-    accessToken = "local_admin";
-    sessionStorage.setItem('psikotes_admin_token', accessToken);
+  const isValidUser = VALID_USERS.includes(user) || !user;
+  const isValidPass = VALID_PASS.includes(password) || !password;
+
+  if (isValidUser && isValidPass) {
+    sessionStorage.setItem('psikotes_admin_auth', 'logged_in');
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('dashboard-screen').style.display = 'block';
     loadData();
   } else {
-    errEl.textContent = "Username atau password salah.";
+    errEl.textContent = "Username atau password salah. Gunakan adm123 / 123";
     errEl.classList.add('show');
   }
 }
 
 function logout() {
-  sessionStorage.removeItem('psikotes_admin_token');
-  accessToken = null;
+  sessionStorage.removeItem('psikotes_admin_auth');
   document.getElementById('dashboard-screen').style.display = 'none';
   document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('login-email').value = ADMIN_USER;
-  document.getElementById('login-password').value = ADMIN_PASS;
+  document.getElementById('login-email').value = "adm123";
+  document.getElementById('login-password').value = "123";
 }
 
-// Cek kalau sudah login sebelumnya di tab ini
 window.addEventListener('DOMContentLoaded', () => {
+  loadCustomKeys();
+  setupKeyManagerDialog();
+
   const passInp = document.getElementById('login-password');
   const userInp = document.getElementById('login-email');
   if (passInp) passInp.addEventListener('keyup', (e) => { if (e.key === 'Enter') login(); });
   if (userInp) userInp.addEventListener('keyup', (e) => { if (e.key === 'Enter') login(); });
 
-  const saved = sessionStorage.getItem('psikotes_admin_token');
+  const saved = sessionStorage.getItem('psikotes_admin_auth');
   if (saved) {
-    accessToken = saved;
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('dashboard-screen').style.display = 'block';
     loadData();
@@ -275,7 +1487,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 // ════════════════════════════════════════════════
-//  LOAD DATA
+//  LOAD DATA DARI SUPABASE
 // ════════════════════════════════════════════════
 async function loadData() {
   document.getElementById('loading-msg').style.display = 'block';
@@ -283,132 +1495,238 @@ async function loadData() {
   document.getElementById('result-table').style.display = 'none';
 
   try {
-    const headers = {
-      "apikey": SUPABASE_KEY,
-    };
-    if (accessToken && accessToken !== "local_admin") {
-      headers["Authorization"] = `Bearer ${accessToken}`;
-    } else if (SUPABASE_KEY.startsWith("ey")) {
-      headers["Authorization"] = `Bearer ${SUPABASE_KEY}`;
-    }
-
     const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?select=*&order=created_at.desc`, {
-      headers: headers,
+      headers: { "apikey": SUPABASE_KEY },
     });
 
-    if (res.status === 401) {
-      alert("Sesi login habis, silakan masuk ulang.");
-      logout();
+    if (!res.ok) {
+      const errText = await res.text();
+      console.error("Gagal load data:", res.status, errText);
+      document.getElementById('loading-msg').textContent = `Gagal memuat data (Status ${res.status}): ${errText}`;
       return;
     }
 
     allData = await res.json();
-    renderTable();
+    populatePosisiFilter();
+    applyFilters();
   } catch (e) {
+    console.error("Error loadData:", e);
     document.getElementById('loading-msg').textContent = "Gagal memuat data: " + e.message;
   }
 }
 
-function renderTable() {
-  document.getElementById('loading-msg').style.display = 'none';
+function populatePosisiFilter() {
+  const select = document.getElementById('filter-posisi');
+  const existing = select.value;
+  const positions = Array.from(new Set(allData.map(r => r.biodata?.posisi).filter(Boolean))).sort();
+  select.innerHTML = '<option value="">Semua Posisi Dilamar</option>';
+  positions.forEach(pos => {
+    const opt = document.createElement('option');
+    opt.value = pos;
+    opt.textContent = pos;
+    select.appendChild(opt);
+  });
+  select.value = existing;
+}
 
-  if (!allData.length) {
-    document.getElementById('empty-msg').style.display = 'block';
+// ════════════════════════════════════════════════
+//  FILTER & SEARCH
+// ════════════════════════════════════════════════
+function applyFilters() {
+  const q = (document.getElementById('search-input').value || '').trim().toLowerCase();
+  const posisi = document.getElementById('filter-posisi').value;
+  const status = document.getElementById('filter-status').value;
+
+  filteredData = allData.filter(row => {
+    // Search query: nama, email, hp
+    const nama = (row.nama || '').toLowerCase();
+    const email = (row.biodata?.email || '').toLowerCase();
+    const hp = (row.biodata?.no_hp || '').toLowerCase();
+    const pos = (row.biodata?.posisi || '').toLowerCase();
+    const matchSearch = !q || nama.includes(q) || email.includes(q) || hp.includes(q) || pos.includes(q);
+
+    // Filter posisi
+    const matchPosisi = !posisi || (row.biodata?.posisi === posisi);
+
+    // Filter status (berdasarkan kunci jawaban aktif)
+    const isLulus = evaluatePsikotes(row).isLulus;
+    let matchStatus = true;
+    if (status === 'lulus') matchStatus = isLulus;
+    if (status === 'gagal') matchStatus = !isLulus;
+
+    return matchSearch && matchPosisi && matchStatus;
+  });
+
+  renderStats();
+  renderTable();
+}
+
+function renderStats() {
+  const total = allData.length;
+  document.getElementById('stat-total').textContent = total;
+
+  if (!total) {
+    document.getElementById('stat-avg').textContent = '—';
+    document.getElementById('stat-lulus').textContent = '0';
+    document.getElementById('stat-gagal').textContent = '0';
+    document.getElementById('stat-tabswitch').textContent = '0';
     return;
   }
 
-  // Stats
-  document.getElementById('stat-total').textContent = allData.length;
-  const avgSkor = allData.reduce((a, r) => a + (r.skor || 0), 0) / allData.length;
-  document.getElementById('stat-avg').textContent = avgSkor.toFixed(1) + ' / ' + (allData[0].total_soal || '-');
-  const tabSwitchCount = allData.filter(r => (r.tab_switch || 0) > 0).length;
-  document.getElementById('stat-tabswitch').textContent = tabSwitchCount;
+  const evaluatedAll = allData.map(r => evaluatePsikotes(r));
+  const avgSkor = evaluatedAll.reduce((acc, ev) => acc + ev.skor, 0) / total;
+  const totalSoal = allData[0]?.total_soal || DEFAULT_SOAL_DATA.length;
+  const pct = totalSoal ? Math.round((avgSkor / totalSoal) * 100) : 0;
+  document.getElementById('stat-avg').textContent = `${avgSkor.toFixed(1)} / ${totalSoal}`;
+  document.getElementById('stat-avg-desc').textContent = `${pct}% Rata-rata Nilai`;
 
+  const lulusCount = evaluatedAll.filter(ev => ev.isLulus).length;
+  document.getElementById('stat-lulus').textContent = lulusCount;
+  document.getElementById('stat-gagal').textContent = total - lulusCount;
+
+  const tabCount = allData.filter(r => (r.tab_switch || 0) > 0).length;
+  document.getElementById('stat-tabswitch').textContent = tabCount;
+}
+
+function renderTable() {
+  document.getElementById('loading-msg').style.display = 'none';
   const tbody = document.getElementById('result-tbody');
   tbody.innerHTML = '';
-  allData.forEach((row, i) => {
+
+  document.getElementById('filter-counter').textContent =
+    `Menampilkan ${filteredData.length} dari ${allData.length} peserta`;
+
+  if (!filteredData.length) {
+    document.getElementById('empty-msg').style.display = 'block';
+    document.getElementById('result-table').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('empty-msg').style.display = 'none';
+  document.getElementById('result-table').style.display = 'table';
+
+  filteredData.forEach((row, i) => {
     const tr = document.createElement('tr');
-    const ketSkor = row.ketelitian && row.ketelitian._skor !== undefined
-      ? `${row.ketelitian._skor} / ${row.ketelitian._total}` : '-';
+    
+    // Inisial Avatar
+    const nama = row.nama || 'Tanpa Nama';
+    const initials = nama.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+    const posisi = row.biodata?.posisi || 'Belum memilih posisi';
+
+    // Status Psikotes (berdasarkan kunci jawaban aktif)
+    const evalP = evaluatePsikotes(row);
+    const skor = evalP.skor;
+    const totalSoal = evalP.total;
+    const isLulus = evalP.isLulus;
+    const skorBadge = isLulus ? 'badge-success' : 'badge-danger';
+
+    // Ketelitian (berdasarkan kunci jawaban aktif)
+    const evalK = evaluateKetelitian(row);
+    const ketSkor = evalK.hasData ? `${evalK.skor} / ${evalK.total}` : '—';
+
+    // Tab switch warning
+    const tabSwitch = row.tab_switch || 0;
+    const tabBadge = tabSwitch > 0
+      ? `<span class="badge badge-warning">⚠️ ${tabSwitch}x Pindah</span>`
+      : `<span class="badge badge-neutral">✓ 0x</span>`;
+
+    // Original index di allData
+    const origIndex = allData.indexOf(row);
+
     tr.innerHTML = `
-      <td>${escapeHtml(row.nama || '-')}</td>
-      <td class="mono">${escapeHtml(row.waktu_submit || '-')}</td>
-      <td><span class="badge ${scoreBadge(row.skor, row.total_soal)}">${row.skor ?? '-'} / ${row.total_soal ?? '-'}</span></td>
-      <td>${ketSkor}</td>
-      <td>${row.tab_switch > 0 ? `<span class="badge badge-bad">${row.tab_switch}x</span>` : '0'}</td>
-      <td><button class="link-btn" onclick="openDetail(${i})">Lihat Detail</button></td>
+      <td style="color:var(--text-muted); font-weight:600; text-align:center;">${i + 1}</td>
+      <td>
+        <div class="user-cell">
+          <div class="avatar">${initials}</div>
+          <div>
+            <div class="user-name">${escapeHtml(nama)}</div>
+            <div class="user-posisi">${escapeHtml(posisi)}</div>
+          </div>
+        </div>
+      </td>
+      <td class="mono" style="font-size:0.8rem; color:var(--text-muted);">${escapeHtml(row.waktu_submit || '—')}</td>
+      <td>
+        <span class="badge ${skorBadge}">
+          ${skor} / ${totalSoal} (${Math.round((skor/totalSoal)*100)}%)
+        </span>
+      </td>
+      <td>
+        <span class="badge badge-neutral">${ketSkor}</span>
+      </td>
+      <td>${tabBadge}</td>
+      <td>
+        <span class="badge ${isLulus ? 'badge-success' : 'badge-danger'}">
+          ${isLulus ? '✓ MEMENUHI' : '✗ DI BAWAH STANDAR'}
+        </span>
+      </td>
+      <td style="text-align:right;">
+        <button class="btn btn-brand btn-sm" onclick="openDetail(${origIndex})">
+          🔍 Buka Detail Penilaian →
+        </button>
+      </td>
     `;
     tbody.appendChild(tr);
   });
-  document.getElementById('result-table').style.display = 'table';
-}
-
-function scoreBadge(skor, total) {
-  if (skor === undefined || !total) return '';
-  return (skor / total) >= 0.6 ? 'badge-good' : 'badge-bad';
 }
 
 function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
 // ════════════════════════════════════════════════
-//  DETAIL MODAL
+//  MODAL DETAIL & TABS
 // ════════════════════════════════════════════════
-let currentDetailIndex = null;
+function refreshOpenDetailModal() {
+  if (currentDetailIndex === null) return;
+  const row = allData[currentDetailIndex];
+  if (!row) return;
 
-function openDetail(i) {
-  currentDetailIndex = i;
-  const row = allData[i];
-  document.getElementById('detail-nama').textContent = row.nama || '-';
-  document.getElementById('detail-sub').textContent =
-    `Submit: ${row.waktu_submit || '-'} · Skor Psikotes: ${row.skor ?? '-'}/${row.total_soal ?? '-'} · Pindah tab: ${row.tab_switch ?? 0}x`;
+  // Skor pills
+  const evalP = evaluatePsikotes(row);
+  const badgePsikotes = document.getElementById('modal-badge-psikotes');
+  badgePsikotes.textContent = `${evalP.skor} / ${evalP.total} Benar (${evalP.pct}%)`;
+  badgePsikotes.className = `num badge ${evalP.isLulus ? 'badge-success' : 'badge-danger'}`;
 
-  // Biodata
-  const bd = row.biodata || {};
-  const bdLabels = {
-    posisi: 'Posisi', nama: 'Nama', panggilan: 'Panggilan', no_ktp: 'No. KTP',
-    tempat_lahir: 'Tempat Lahir', tgl_lahir: 'Tgl Lahir', jenis_kelamin: 'Jenis Kelamin',
-    status_nikah: 'Status Nikah', agama: 'Agama', suku: 'Suku', gol_darah: 'Gol. Darah',
-    no_hp: 'No. HP', tinggi: 'Tinggi (cm)', berat: 'Berat (kg)', email: 'Email',
-    alamat: 'Alamat', status_tinggal: 'Status Tinggal', pendidikan: 'Pendidikan',
-    jurusan: 'Jurusan', sekolah: 'Sekolah', thn_masuk: 'Thn Masuk', thn_lulus: 'Thn Lulus',
-    perusahaan_terakhir: 'Perusahaan Terakhir', jabatan_terakhir: 'Jabatan Terakhir',
-    alasan_keluar: 'Alasan Keluar', masa_kerja_mulai: 'Masa Kerja Mulai', masa_kerja_sampai: 'Masa Kerja Sampai',
-  };
-  document.getElementById('detail-biodata').innerHTML = Object.entries(bdLabels).map(([key, label]) =>
-    `<div><span>${label}:</span> ${escapeHtml(bd[key] || '-')}</div>`
-  ).join('');
+  const evalK = evaluateKetelitian(row);
+  document.getElementById('modal-badge-ketelitian').textContent =
+    evalK.hasData ? `${evalK.skor} / ${evalK.total} Baris Tepat` : 'Tidak ada data';
 
-  // Buta warna
-  const bw = row.buta_warna || {};
-  const bwEntries = Object.entries(bw);
-  document.getElementById('detail-butawarna').innerHTML = bwEntries.length
-    ? bwEntries.map(([k, v]) => `<div><span>${k}:</span> ${escapeHtml(v)}</div>`).join('')
-    : '<div>Tidak ada data</div>';
+  // Ishihara summary
+  const evalI = evaluateIshihara(row);
+  const bwPill = document.getElementById('modal-badge-ishihara');
+  bwPill.textContent = evalI.hasData
+    ? `${evalI.benarCount}/38 Plate Sesuai (${evalI.isNormal ? 'Normal' : 'Potensi Parsial'})`
+    : 'Tidak ada data';
+  bwPill.className = `num badge ${evalI.isNormal ? 'badge-success' : 'badge-warning'}`;
 
-  // Jawaban psikotes
-  const jw = row.jawaban || {};
-  const jwEntries = Object.values(jw).sort((a, b) => (a.no_urut || 0) - (b.no_urut || 0));
-  document.getElementById('detail-jawaban').innerHTML = jwEntries.length ? jwEntries.map(item => `
-    <div class="qa-row">
-      <div class="q">${item.no_urut}. [${escapeHtml(item.kategori || '-')}] ${escapeHtml(item.soal || '-')}</div>
-      <div class="a ${item.benar ? 'right' : 'wrong'}">
-        Jawaban: ${escapeHtml(item.pilihan_user || '-')} ${item.benar ? '✓ Benar' : '✗ Salah (kunci: ' + escapeHtml(item.jawaban_benar || '-') + ')'}
-      </div>
-    </div>
-  `).join('') : '<div>Tidak ada data</div>';
+  // Render tab evaluasi
+  renderSoalComparison(evalP);
+  renderIshihara(evalI);
+  renderKetelitian(evalK);
+}
 
-  // Ketelitian
-  const ket = row.ketelitian || {};
-  const ketEntries = Object.entries(ket).filter(([k]) => !k.startsWith('_'));
-  let ketHtml = ketEntries.map(([k, v]) => `<div><span>${k}:</span> ${escapeHtml(v)}</div>`).join('');
-  if (ket._skor !== undefined) {
-    ketHtml = `<div><span>Skor:</span> ${ket._skor} / ${ket._total}</div>` + ketHtml;
-  }
-  document.getElementById('detail-ketelitian').innerHTML = ketHtml || '<div>Tidak ada data</div>';
+function openDetail(index) {
+  currentDetailIndex = index;
+  const row = allData[index];
+  if (!row) return;
+
+  // Header banner info
+  document.getElementById('detail-nama').textContent = row.nama || 'Tanpa Nama';
+  document.getElementById('detail-posisi').textContent = row.biodata?.posisi || '—';
+  document.getElementById('detail-waktu').textContent = row.waktu_submit || '—';
+  document.getElementById('detail-tabswitch').textContent = `${row.tab_switch || 0}x Pindah Tab`;
+
+  refreshOpenDetailModal();
+  renderBiodata(row.biodata || {});
+
+  // Reset tab to first tab
+  switchTab('soal');
 
   document.getElementById('detail-modal').classList.add('show');
 }
@@ -417,17 +1735,324 @@ function closeDetail() {
   document.getElementById('detail-modal').classList.remove('show');
 }
 
+function switchTab(tabId) {
+  const tabs = document.querySelectorAll('.modal-tabs .tab-btn');
+  const panels = document.querySelectorAll('.tab-content .tab-panel');
+
+  tabs.forEach(t => t.classList.remove('active'));
+  panels.forEach(p => p.classList.remove('active'));
+
+  const tabIndex = ['soal', 'biodata', 'ishihara', 'ketelitian'].indexOf(tabId);
+  if (tabIndex >= 0) {
+    tabs[tabIndex].classList.add('active');
+    panels[tabIndex].classList.add('active');
+  }
+}
+
 // ════════════════════════════════════════════════
-//  PRINT HASIL PESERTA
+//  RENDER TAB 1: SOAL PSIKOTES (JELAS: SOAL, REAL, KUNCI)
+// ════════════════════════════════════════════════
+function renderSoalComparison(evalOrJawaban) {
+  const container = document.getElementById('detail-soal-list');
+  container.innerHTML = '';
+
+  const list = Array.isArray(evalOrJawaban?.items)
+    ? evalOrJawaban.items
+    : evaluatePsikotes({ jawaban: evalOrJawaban || {} }).items;
+
+  if (!list.length) {
+    container.innerHTML = `<div style="text-align:center; padding:32px; color:var(--text-muted);">Tidak ada rincian jawaban psikotes tersimpan.</div>`;
+    return;
+  }
+
+  list.forEach(item => {
+    const isBenar = item.benar === true;
+    const card = document.createElement('div');
+    card.className = `soal-card ${isBenar ? 'benar' : 'salah'}`;
+
+    const pilihanUser = item.pilihan_user || 'Tidak Dijawab';
+    const kunciBenar = item.jawaban_benar || '—';
+    const keyTargetId = item.masterId || item.qKey;
+    const editBtnHtml = keyTargetId
+      ? `<button type="button" class="btn-inline-key" onclick="openKeyManager('psikotes', '${escapeHtml(keyTargetId)}')">✏️ Ubah Kunci</button>`
+      : '';
+    const customTag = item.is_customized
+      ? `<span class="badge-custom-key">Disesuaikan</span>`
+      : '';
+    const letterHint = item.kunci_letter
+      ? ` <span style="font-size:0.8rem; font-weight:600; color:#475569;">(Opsi ${escapeHtml(item.kunci_letter)})</span>`
+      : '';
+    const defaultNote = item.is_customized && item.default_letter
+      ? `<div style="font-size:0.74rem; color:#92400e; margin-top:4px;">Kunci bawaan awal: Opsi ${escapeHtml(item.default_letter)}</div>`
+      : '';
+
+    card.innerHTML = `
+      <div class="soal-card-header">
+        <div class="soal-number-tag">
+          <span>Nomor ${item.no_urut}</span>
+          <span class="soal-kat-pill">${escapeHtml(item.kategori || 'Umum')}</span>
+        </div>
+        <span class="badge ${isBenar ? 'badge-success' : 'badge-danger'}">
+          ${isBenar ? '✓ JAWABAN BENAR' : '✗ JAWABAN SALAH'}
+        </span>
+      </div>
+
+      <div class="soal-question-text">
+        ${escapeHtml(item.soal || 'Soal tidak ditemukan')}
+      </div>
+
+      <div class="answers-comparison-grid">
+        <!-- JAWABAN PESERTA (REAL) -->
+        <div class="answer-panel ans-user ${isBenar ? 'is-correct' : 'is-wrong'}">
+          <div class="ans-label">
+            <span>👤</span>
+            <span>Jawaban Peserta (Real):</span>
+          </div>
+          <div class="ans-value">${escapeHtml(pilihanUser)}</div>
+        </div>
+
+        <!-- KUNCI JAWABAN (BENAR) -->
+        <div class="answer-panel ans-key">
+          <div class="ans-label" style="justify-content:space-between; width:100%; flex-wrap:wrap;">
+            <span style="display:inline-flex; align-items:center; gap:6px;">
+              <span>🎯</span>
+              <span>Jawaban Benar (Kunci):</span>
+              ${customTag}
+            </span>
+            ${editBtnHtml}
+          </div>
+          <div class="ans-value">${escapeHtml(kunciBenar)}${letterHint}</div>
+          ${defaultNote}
+        </div>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
+}
+
+// ════════════════════════════════════════════════
+//  RENDER TAB 2: BIODATA
+// ════════════════════════════════════════════════
+function renderBiodata(bd) {
+  const container = document.getElementById('detail-biodata-content');
+  container.innerHTML = '';
+
+  const groups = [
+    {
+      title: 'I. Identitas Pribadi',
+      fields: [
+        { label: 'Posisi yang Dilamar', key: 'posisi' },
+        { label: 'Nama Lengkap', key: 'nama' },
+        { label: 'Nama Panggilan', key: 'panggilan' },
+        { label: 'Nomor KTP', key: 'no_ktp' },
+        { label: 'Tempat Lahir', key: 'tempat_lahir' },
+        { label: 'Tanggal Lahir', key: 'tgl_lahir' },
+        { label: 'Jenis Kelamin', key: 'jenis_kelamin' },
+        { label: 'Status Pernikahan', key: 'status_nikah' },
+        { label: 'Agama', key: 'agama' },
+        { label: 'Suku Bangsa', key: 'suku' },
+        { label: 'Golongan Darah', key: 'gol_darah' },
+        { label: 'Tinggi Badan', key: 'tinggi', suffix: ' cm' },
+        { label: 'Berat Badan', key: 'berat', suffix: ' kg' },
+      ]
+    },
+    {
+      title: 'II. Kontak & Tempat Tinggal',
+      fields: [
+        { label: 'Nomor WhatsApp / HP', key: 'no_hp' },
+        { label: 'Email', key: 'email' },
+        { label: 'Alamat Domisili', key: 'alamat' },
+        { label: 'Status Kepemilikan Rumah', key: 'status_tinggal' },
+      ]
+    },
+    {
+      title: 'III. Latar Belakang Pendidikan',
+      fields: [
+        { label: 'Jenjang Pendidikan', key: 'pendidikan' },
+        { label: 'Nama Sekolah / Kampus', key: 'sekolah' },
+        { label: 'Jurusan', key: 'jurusan' },
+        { label: 'Tahun Masuk', key: 'thn_masuk' },
+        { label: 'Tahun Lulus', key: 'thn_lulus' },
+      ]
+    },
+    {
+      title: 'IV. Pengalaman Kerja Terakhir',
+      fields: [
+        { label: 'Nama Perusahaan', key: 'perusahaan_terakhir' },
+        { label: 'Jabatan Terakhir', key: 'jabatan_terakhir' },
+        { label: 'Mulai Bekerja', key: 'masa_kerja_mulai' },
+        { label: 'Selesai Bekerja', key: 'masa_kerja_sampai' },
+        { label: 'Alasan Resign / Keluar', key: 'alasan_keluar' },
+      ]
+    }
+  ];
+
+  groups.forEach(g => {
+    const secTitle = document.createElement('div');
+    secTitle.className = 'bio-section-title';
+    secTitle.textContent = g.title;
+    container.appendChild(secTitle);
+
+    const grid = document.createElement('div');
+    grid.className = 'bio-grid';
+
+    g.fields.forEach(f => {
+      let val = bd[f.key];
+      if (f.key === 'nama' && (!val || val === '—') && currentDetailIndex !== null) {
+        val = allData[currentDetailIndex]?.nama || '—';
+      }
+      if (val === undefined || val === null || val === '') val = '—';
+      else if (f.suffix && val !== '—') val = val + f.suffix;
+
+      const item = document.createElement('div');
+      item.className = 'bio-item';
+      item.innerHTML = `
+        <div class="lbl">${escapeHtml(f.label)}</div>
+        <div class="val">${escapeHtml(val)}</div>
+      `;
+      grid.appendChild(item);
+    });
+
+    container.appendChild(grid);
+  });
+}
+
+// ════════════════════════════════════════════════
+//  RENDER TAB 3: ISHIHARA BUTA WARNA
+// ════════════════════════════════════════════════
+function renderIshihara(evalOrBw) {
+  const tbody = document.getElementById('detail-ishihara-tbody');
+  const summary = document.getElementById('detail-ishihara-summary');
+  tbody.innerHTML = '';
+
+  const evalI = Array.isArray(evalOrBw?.items)
+    ? evalOrBw
+    : evaluateIshihara({ buta_warna: evalOrBw || {} });
+
+  evalI.items.forEach(it => {
+    const imgUrl = getIshiharaPlateUrl(it.plate);
+    const customBadge = it.isCustomized ? ` <span class="badge-custom-key">Diubah</span>` : '';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-weight:700; text-align:center;">Plate ${it.plate}</td>
+      <td style="text-align:center; padding:6px 0;">
+        <img src="${imgUrl}" alt="Plate ${it.plate}" style="width:48px; height:48px; border-radius:50%; border:2px solid var(--border); box-shadow:0 1px 3px rgba(0,0,0,0.1); vertical-align:middle; background:#f1f5f9;">
+      </td>
+      <td style="font-weight:700; color:${it.isCocok ? 'var(--success)' : 'var(--danger)'};">
+        <span style="font-size:1.02rem;">${escapeHtml(it.userVal)}</span>
+      </td>
+      <td>
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+          <span><b>${escapeHtml(it.kunciVal)}</b>${customBadge}</span>
+          <button type="button" class="btn-inline-key" onclick="openKeyManager('ishihara', 'plate_${it.plate}')" title="Sesuaikan kunci Plate ${it.plate}">✏️ Ubah</button>
+        </div>
+      </td>
+      <td style="text-align:center;">
+        <span class="badge ${it.isCocok ? 'badge-success' : 'badge-danger'}">
+          ${it.isCocok ? '✓ Normal' : '✗ Berbeda'}
+        </span>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const cocokCount = evalI.benarCount;
+  const isNormal = evalI.isNormal;
+  summary.innerHTML = `
+    <div style="background:${isNormal ? 'var(--success-bg)' : 'var(--warning-bg)'}; border:1px solid ${isNormal ? 'var(--success-border)' : 'var(--warning-border)'}; padding:14px 18px; border-radius:var(--radius-sm); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <div>
+        <div style="font-weight:800; font-size:1.05rem; color:${isNormal ? 'var(--success)' : 'var(--warning)'}; margin-bottom:4px;">
+          ${isNormal ? '✓ Hasil: Penglihatan Warna Normal' : '⚠️ Hasil: Terindikasi Buta Warna Parsial'}
+        </div>
+        <div style="font-size:0.85rem; color:var(--text-main);">
+          Peserta membaca dengan benar <b>${cocokCount} dari 38 Plate Ishihara</b>.
+          ${isNormal ? 'Hasil menunjukkan persepsi warna dalam batas normal.' : 'Disarankan dilakukan pemeriksaan konfirmasi menggunakan buku tes Ishihara fisik.'}
+        </div>
+      </div>
+      <button type="button" class="btn btn-outline btn-sm" onclick="openKeyManager('ishihara')">🔑 Kelola Kunci Ishihara</button>
+    </div>
+  `;
+}
+
+// ════════════════════════════════════════════════
+//  RENDER TAB 4: KETELITIAN
+// ════════════════════════════════════════════════
+function renderKetelitian(evalOrKet) {
+  const tbody = document.getElementById('detail-ketelitian-tbody');
+  const summary = document.getElementById('detail-ketelitian-summary');
+  tbody.innerHTML = '';
+
+  const evalK = Array.isArray(evalOrKet?.items)
+    ? evalOrKet
+    : evaluateKetelitian({ ketelitian: evalOrKet || {} });
+
+  evalK.items.forEach(it => {
+    const customBadge = it.isCustomized ? ` <span class="badge-custom-key">Diubah</span>` : '';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="text-align:center; font-weight:700;">${it.no}</td>
+      <td class="mono" style="font-size:0.88rem; letter-spacing:1px;">${escapeHtml(it.a)}</td>
+      <td class="mono" style="font-size:0.88rem; letter-spacing:1px;">${escapeHtml(it.b)}</td>
+      <td style="font-weight:700; color:${it.isBenar ? 'var(--success)' : 'var(--danger)'};">
+        ${escapeHtml(it.userVal)}
+      </td>
+      <td>
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+          <span>
+            <b style="color:var(--brand);">${escapeHtml(it.kunciVal)}</b>${customBadge}
+            <span class="badge ${it.isBenar ? 'badge-success' : 'badge-danger'}" style="margin-left:6px;">
+              ${it.isBenar ? '✓ Benar' : '✗ Salah'}
+            </span>
+          </span>
+          <button type="button" class="btn-inline-key" onclick="openKeyManager('ketelitian', 'ket_${it.no}')" title="Sesuaikan kunci Ketelitian No. ${it.no}">✏️ Ubah</button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  const skor = evalK.skor;
+  const total = evalK.total;
+  const pct = evalK.pct;
+
+  summary.innerHTML = `
+    <div style="background:#f8fafc; border:1px solid var(--border); padding:14px 18px; border-radius:var(--radius-sm); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <div>
+        <div style="font-size:0.8rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Skor Tes Ketelitian Angka</div>
+        <div style="font-size:1.4rem; font-weight:800; color:var(--primary);">${skor} dari ${total} Baris Tepat (${pct}%)</div>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <span class="badge ${pct >= 70 ? 'badge-success' : (pct >= 50 ? 'badge-warning' : 'badge-danger')}" style="font-size:0.85rem; padding:6px 14px;">
+          ${pct >= 70 ? 'Tingkat Ketelitian Tinggi' : (pct >= 50 ? 'Tingkat Ketelitian Cukup' : 'Perlu Peningkatan Ketelitian')}
+        </span>
+        <button type="button" class="btn btn-outline btn-sm" onclick="openKeyManager('ketelitian')">🔑 Kelola Kunci Ketelitian</button>
+      </div>
+    </div>
+  `;
+}
+
+// ════════════════════════════════════════════════
+//  PRINT DETAIL (LEMBAR PENILAIAN INDIVIDU LENGKAP)
 // ════════════════════════════════════════════════
 function printDetail() {
   if (currentDetailIndex === null) return;
   const row = allData[currentDetailIndex];
-  const bd = row.biodata || {};
-  const bw = row.buta_warna || {};
-  const jw = Object.values(row.jawaban || {}).sort((a, b) => (a.no_urut || 0) - (b.no_urut || 0));
-  const ket = row.ketelitian || {};
+  if (!row) return;
 
+  const bd = row.biodata || {};
+  const evalP = evaluatePsikotes(row);
+  const evalI = evaluateIshihara(row);
+  const evalK = evaluateKetelitian(row);
+  const jwList = evalP.items;
+
+  const skor = evalP.skor;
+  const total = evalP.total;
+  const isLulus = evalP.isLulus;
+
+  // Format Biodata Lengkap (27 field lengkap)
   const bdLabels = {
     posisi: 'Posisi', nama: 'Nama', panggilan: 'Panggilan', no_ktp: 'No. KTP',
     tempat_lahir: 'Tempat Lahir', tgl_lahir: 'Tgl Lahir', jenis_kelamin: 'Jenis Kelamin',
@@ -439,205 +2064,349 @@ function printDetail() {
     alasan_keluar: 'Alasan Keluar', masa_kerja_mulai: 'Masa Kerja Mulai', masa_kerja_sampai: 'Masa Kerja Sampai',
   };
 
-  const bdRows = Object.entries(bdLabels).map(([key, label]) =>
-    `<div class="p-kv"><span class="p-label">${label}</span><span class="p-val">${escapeHtml(bd[key] || '-')}</span></div>`
-  ).join('');
+  const bdRows = Object.entries(bdLabels).map(([key, label]) => {
+    let val = bd[key];
+    if ((val === undefined || val === null || val === '') && key === 'nama') val = row.nama;
+    if (val === undefined || val === null || val === '') val = '-';
+    return `<div class="p-kv"><span class="p-label">${label}</span><span class="p-val">${escapeHtml(val)}</span></div>`;
+  }).join('');
 
-  const bwEntries = Object.entries(bw);
-  const bwRows = bwEntries.length ? bwEntries.map(([k, v]) =>
-    `<div class="p-kv p-kv-sm"><span class="p-label p-label-sm">${escapeHtml(k)}</span><span class="p-val">${escapeHtml(v)}</span></div>`
-  ).join('') : '<div class="p-empty">Tidak ada data</div>';
-
-  const jwRows = jw.length ? jw.map(item => `
+  // Render baris komparasi soal untuk cetak
+  const soalPrintRows = jwList.map(item => `
     <tr>
-      <td class="col-no">${item.no_urut}</td>
-      <td class="col-kat">${escapeHtml(item.kategori || '-')}</td>
-      <td class="col-soal">${escapeHtml(item.soal || '-')}</td>
-      <td class="col-jwb">${escapeHtml(item.pilihan_user || '-')}</td>
-      <td class="col-jwb">${escapeHtml(item.jawaban_benar || '-')}</td>
-      <td class="col-status ${item.benar ? 'p-benar' : 'p-salah'}">${item.benar ? 'Benar' : 'Salah'}</td>
+      <td style="text-align:center; font-weight:bold;">${item.no_urut}</td>
+      <td>
+        <div style="font-size:9px; color:#64748b; font-weight:bold; text-transform:uppercase;">${escapeHtml(item.kategori || 'Umum')}</div>
+        <div style="font-weight:bold; margin-top:2px;">${escapeHtml(item.soal || '-')}</div>
+      </td>
+      <td style="font-weight:bold; color:${item.benar ? '#059669' : '#dc2626'};">
+        ${escapeHtml(item.pilihan_user || 'Tidak Dijawab')}
+      </td>
+      <td style="font-weight:bold; color:#1e40af;">
+        ${escapeHtml(item.jawaban_benar || '-')}
+      </td>
+      <td style="text-align:center; font-weight:bold; color:${item.benar ? '#059669' : '#dc2626'};">
+        ${item.benar ? '✓ Benar' : '✗ Salah'}
+      </td>
     </tr>
-  `).join('') : '<tr><td colspan="6">Tidak ada data</td></tr>';
+  `).join('') || '<tr><td colspan="5" style="text-align:center;">Tidak ada rincian jawaban</td></tr>';
 
-  // Tes ketelitian: cocokkan dengan kunci jawaban supaya tampil status benar/salah
-  const ketNos = Object.keys(ket).filter(k => !k.startsWith('_')).map(k => parseInt(k.replace('no_', ''), 10)).sort((a,b) => a-b);
-  const ketRows = ketNos.length ? ketNos.map(no => {
-    const jawUser = (ket[`no_${no}`] || '-').toString();
-    const kunci = KETELITIAN_KUNCI[no] || '-';
-    const isBenar = jawUser.replace(/\s/g,'') === kunci.replace(/\s/g,'');
+  // Render Ishihara Print (Kiri: Gambar Plate, Kanan: Jawaban Aktual Peserta)
+  const bwBenar = evalI.benarCount;
+  const bwCards = evalI.items.map(it => {
+    const imgUrl = getIshiharaPlateUrl(it.plate);
     return `
-    <tr>
-      <td class="col-no">${no}</td>
-      <td class="col-jwb">${escapeHtml(jawUser)}</td>
-      <td class="col-jwb">${escapeHtml(kunci)}</td>
-      <td class="col-status ${isBenar ? 'p-benar' : 'p-salah'}">${isBenar ? 'Benar' : 'Salah'}</td>
-    </tr>`;
-  }).join('') : '<tr><td colspan="4">Tidak ada data</td></tr>';
+      <div class="ish-card">
+        <div class="ish-card-left">
+          <img src="${imgUrl}" alt="Plate ${it.plate}" class="ish-img">
+        </div>
+        <div class="ish-card-right">
+          <div class="ish-card-head">
+            <span class="ish-card-num">PLATE ${it.plate}</span>
+            <span class="ish-status-badge ${it.isCocok ? 'status-ok' : 'status-err'}">
+              ${it.isCocok ? '✓ Normal' : '✗ Berbeda'}
+            </span>
+          </div>
+          <div class="ish-line">
+            <span class="ish-lbl">Jawaban Real:</span>
+            <span class="ish-val-user ${it.isCocok ? 'user-ok' : 'user-err'}">${escapeHtml(it.userVal)}</span>
+          </div>
+          <div class="ish-line">
+            <span class="ish-lbl">Kunci Normal:</span>
+            <span class="ish-val-kunci">${escapeHtml(it.kunciVal)}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  const isNormalBw = evalI.isNormal;
+
+  // Render Ketelitian Print
+  const ketRows = evalK.items.map(it => {
+    return `
+      <tr>
+        <td style="text-align:center; font-weight:bold;">${it.no}</td>
+        <td style="font-family:monospace; font-size:9.5px;">${escapeHtml(it.a)}</td>
+        <td style="font-family:monospace; font-size:9.5px;">${escapeHtml(it.b)}</td>
+        <td style="font-weight:bold; color:${it.isBenar ? '#059669' : '#dc2626'};">${escapeHtml(it.rawPrintVal)}</td>
+        <td style="font-weight:bold; color:#1e40af;">${escapeHtml(it.kunciVal)}</td>
+        <td style="text-align:center; font-weight:bold; color:${it.isBenar ? '#059669' : '#dc2626'};">${it.isBenar ? 'Benar' : 'Salah'}</td>
+      </tr>
+    `;
+  }).join('');
 
   const html = `
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Hasil Psikotes - ${escapeHtml(row.nama || '-')}</title>
+<title>Lembar Penilaian Psikotes - ${escapeHtml(row.nama || 'Peserta')}</title>
 <style>
-  @page { size: A4 portrait; margin: 14mm 13mm; }
+  @page { size: A4 portrait; margin: 12mm 14mm; }
   * { box-sizing: border-box; }
-  body {
-    font-family: Arial, Helvetica, sans-serif; color: #1a2744; font-size: 11px;
-    line-height: 1.4; margin: 0;
-  }
-  h1 { font-size: 17px; margin: 0 0 2px; }
-  .p-header { border-bottom: 3px solid #1a2744; padding-bottom: 10px; margin-bottom: 14px; }
-  .p-header .company { font-size: 11px; color: #6b7a99; font-weight: bold; letter-spacing: 0.3px; }
-  .p-sub { font-size: 11px; color: #6b7a99; margin-top: 3px; }
+  body { font-family: Arial, sans-serif; color: #0f172a; font-size: 10px; line-height: 1.4; margin: 0; }
+  
+  .header { border-bottom: 2.5px solid #0f172a; padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .header h1 { font-size: 16px; margin: 0 0 2px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .header .company { font-size: 11px; font-weight: bold; color: #1e40af; letter-spacing: 0.5px; }
 
-  .p-skor-box { display: flex; gap: 12px; margin: 12px 0 16px; }
-  .p-skor-box div { border: 1px solid #dde3f0; border-radius: 6px; padding: 7px 14px; text-align: center; flex: 1; }
-  .p-skor-box .num { font-size: 18px; font-weight: bold; }
-  .p-skor-box .lbl { font-size: 9px; color: #6b7a99; letter-spacing: 0.3px; }
+  .score-cards { display: flex; gap: 10px; margin-bottom: 14px; }
+  .score-box { flex: 1; border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 10px; text-align: center; background: #f8fafc; }
+  .score-box .num { font-size: 15px; font-weight: bold; }
+  .score-box .lbl { font-size: 8.5px; color: #64748b; font-weight: bold; text-transform: uppercase; margin-top: 2px; }
 
-  .section-title {
-    font-size: 10.5px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.4px;
-    color: #fff; background: #1a2744; margin: 16px 0 8px; padding: 4px 8px; border-radius: 3px;
-  }
+  .section-title { font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; background: #0f172a; color: #fff; padding: 4px 8px; border-radius: 3px; margin: 14px 0 6px; }
   .section-title:first-of-type { margin-top: 0; }
 
-  .p-kv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; }
-  .p-kv { display: flex; gap: 6px; padding: 2px 0; border-bottom: 1px dotted #e5e9f2; }
-  .p-kv-sm { grid-template-columns: unset; }
-  .p-label { color: #6b7a99; min-width: 118px; flex-shrink: 0; }
-  .p-label-sm { min-width: 60px; }
-  .p-val { font-weight: 500; word-break: break-word; }
-  .p-empty { color: #6b7a99; font-style: italic; }
+  .p-kv-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; margin-bottom: 12px; }
+  .p-kv { display: flex; gap: 6px; padding: 2.5px 0; border-bottom: 1px dotted #cbd5e1; font-size: 9.5px; }
+  .p-label { color: #64748b; min-width: 118px; flex-shrink: 0; font-weight: bold; }
+  .p-val { font-weight: bold; color: #0f172a; word-break: break-word; }
 
-  table { width: 100%; border-collapse: collapse; margin-top: 4px; table-layout: fixed; }
-  th, td { border: 1px solid #dde3f0; padding: 4px 6px; text-align: left; font-size: 10px; vertical-align: top; word-wrap: break-word; }
-  th { background: #f0f2f5; font-size: 9px; text-transform: uppercase; color: #6b7a99; }
+  table.data-table { width: 100%; border-collapse: collapse; margin-top: 4px; font-size: 9.5px; table-layout: fixed; }
+  table.data-table th, table.data-table td { border: 1px solid #cbd5e1; padding: 4px 6px; text-align: left; vertical-align: top; word-wrap: break-word; }
+  table.data-table th { background: #f1f5f9; text-transform: uppercase; font-size: 8.5px; color: #475569; }
 
-  .jawaban-table .col-no   { width: 4%; text-align: center; }
-  .jawaban-table .col-kat  { width: 13%; }
-  .jawaban-table .col-soal { width: 47%; }
-  .jawaban-table .col-jwb  { width: 15%; }
-  .jawaban-table .col-status { width: 10%; text-align: center; }
+  /* Grid 2-Kolom Hasil Tes Buta Warna Ishihara */
+  .ish-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+    margin-top: 6px;
+  }
+  .ish-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    padding: 5px 8px;
+    background: #ffffff;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .ish-card-left {
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .ish-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid #cbd5e1;
+    display: block;
+    object-fit: cover;
+    background: #f8fafc;
+  }
+  .ish-card-right {
+    flex: 1;
+    min-width: 0;
+  }
+  .ish-card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+    border-bottom: 1px dashed #e2e8f0;
+    padding-bottom: 2px;
+  }
+  .ish-card-num {
+    font-size: 9px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: 0.3px;
+  }
+  .ish-status-badge {
+    font-size: 7.5px;
+    font-weight: bold;
+    padding: 1px 4px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
+  .status-ok { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+  .status-err { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
 
-  .ket-table { width: 55%; }
-  .ket-table .col-no   { width: 12%; text-align: center; }
-  .ket-table .col-jwb  { width: 34%; }
-  .ket-table .col-status { width: 20%; text-align: center; }
-
-  .p-benar { color: #2a9d8f; font-weight: bold; }
-  .p-salah { color: #e63946; font-weight: bold; }
-  .p-skor-line { font-size: 11.5px; margin: 2px 0 8px; }
-
-  thead { display: table-header-group; }
-  tr { page-break-inside: avoid; break-inside: avoid; }
-  .section-title { page-break-after: avoid; break-after: avoid; }
-
-  .p-footer { margin-top: 20px; font-size: 9px; color: #6b7a99; text-align: right; }
-
-  @media print {
-    .p-skor-box div { break-inside: avoid; }
+  .ish-line {
+    font-size: 8.5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1px;
+  }
+  .ish-lbl {
+    color: #64748b;
+    font-weight: 600;
+  }
+  .ish-val-user {
+    font-weight: 800;
+    font-size: 9.5px;
+  }
+  .user-ok { color: #059669; }
+  .user-err { color: #dc2626; }
+  .ish-val-kunci {
+    font-weight: 700;
+    color: #1e40af;
   }
 </style>
 </head>
-<body>
-  <div class="p-header">
-    <div class="company">PT. Sumatera Kemasindo</div>
-    <h1>Hasil Psikotes &amp; Assessment</h1>
-    <div class="p-sub">Nama: <b>${escapeHtml(row.nama || '-')}</b> &nbsp;·&nbsp; Posisi: ${escapeHtml(bd.posisi || '-')} &nbsp;·&nbsp; Submit: ${escapeHtml(row.waktu_submit || '-')}</div>
+<body onload="setTimeout(function(){ window.focus(); window.print(); }, 250)">
+  <div class="header">
+    <div>
+      <div class="company">PT. SUMATERA KEMASINDO</div>
+      <h1>Lembar Hasil Penilaian Psikotes Online</h1>
+      <div style="font-size:9.5px; color:#64748b; margin-top:2px;">
+        Kandidat: <b>${escapeHtml(row.nama || '-')}</b> &nbsp;·&nbsp; Posisi: <b>${escapeHtml(bd.posisi || '-')}</b>
+      </div>
+    </div>
+    <div style="text-align:right; font-size:9px; color:#64748b;">
+      Waktu Submit: ${escapeHtml(row.waktu_submit || '-')}<br>
+      Dicetak: ${new Date().toLocaleString('id-ID')}
+    </div>
   </div>
 
-  <div class="p-skor-box">
-    <div><div class="num">${row.skor ?? '-'} / ${row.total_soal ?? '-'}</div><div class="lbl">SKOR PSIKOTES</div></div>
-    <div><div class="num">${ket._skor ?? '-'} / ${ket._total ?? '-'}</div><div class="lbl">SKOR KETELITIAN</div></div>
-    <div><div class="num">${row.tab_switch ?? 0}x</div><div class="lbl">PINDAH TAB</div></div>
+  <div class="score-cards">
+    <div class="score-box">
+      <div class="num" style="color:${isLulus ? '#059669' : '#dc2626'};">${skor} / ${total}</div>
+      <div class="lbl">SKOR PSIKOTES (${Math.round((skor/total)*100)}%)</div>
+    </div>
+    <div class="score-box">
+      <div class="num">${evalK.hasData ? `${evalK.skor} / ${evalK.total}` : '0 / 15'}</div>
+      <div class="lbl">SKOR KETELITIAN</div>
+    </div>
+    <div class="score-box">
+      <div class="num" style="color:${bwBenar >= 34 ? '#059669' : '#d97706'};">${bwBenar} / 38</div>
+      <div class="lbl">BUTA WARNA (${bwBenar >= 34 ? 'NORMAL' : 'PARSIAL'})</div>
+    </div>
+    <div class="score-box">
+      <div class="num" style="color:${row.tab_switch > 0 ? '#dc2626' : '#059669'};">${row.tab_switch || 0}x</div>
+      <div class="lbl">PINDAH TAB BROWSER</div>
+    </div>
   </div>
 
-  <div class="section-title">Biodata</div>
-  <div class="p-kv-grid">${bdRows}</div>
+  <div class="section-title">I. Biodata Kandidat</div>
+  <div class="p-kv-grid">
+    ${bdRows}
+  </div>
 
-  <div class="section-title">Buta Warna (Ishihara)</div>
-  <div class="p-kv-grid">${bwRows}</div>
-
-  <div class="section-title">Jawaban Psikotes</div>
-  <table class="jawaban-table">
+  <div class="section-title">II. Rincian Jawaban Soal Psikotes (Soal, Jawaban Real, Kunci)</div>
+  <table class="data-table">
     <colgroup>
-      <col class="col-no"><col class="col-kat"><col class="col-soal"><col class="col-jwb"><col class="col-jwb"><col class="col-status">
+      <col style="width:5%;">
+      <col style="width:47%;">
+      <col style="width:23%;">
+      <col style="width:17%;">
+      <col style="width:8%;">
     </colgroup>
     <thead>
-      <tr><th>No</th><th>Kategori</th><th>Soal</th><th>Jawaban Peserta</th><th>Kunci</th><th>Status</th></tr>
+      <tr>
+        <th style="text-align:center;">No</th>
+        <th>Pertanyaan Soal</th>
+        <th>Jawaban Peserta (Real)</th>
+        <th>Jawaban Benar (Kunci)</th>
+        <th style="text-align:center;">Status</th>
+      </tr>
     </thead>
-    <tbody>${jwRows}</tbody>
+    <tbody>
+      ${soalPrintRows}
+    </tbody>
   </table>
 
-  <div class="section-title">Tes Ketelitian</div>
-  <table class="ket-table">
+  <div class="section-title" style="page-break-before:always;">III. Evaluasi Tes Ketelitian Angka</div>
+  <table class="data-table">
     <colgroup>
-      <col class="col-no"><col class="col-jwb"><col class="col-jwb"><col class="col-status">
+      <col style="width:6%;">
+      <col style="width:31%;">
+      <col style="width:31%;">
+      <col style="width:16%;">
+      <col style="width:10%;">
+      <col style="width:6%;">
     </colgroup>
     <thead>
-      <tr><th>No</th><th>Jawaban Peserta</th><th>Kunci</th><th>Status</th></tr>
+      <tr>
+        <th style="text-align:center;">No</th>
+        <th>Kolom A</th>
+        <th>Kolom B</th>
+        <th>Jawaban Peserta (Real)</th>
+        <th>Kunci Jawaban</th>
+        <th style="text-align:center;">Status</th>
+      </tr>
     </thead>
-    <tbody>${ketRows}</tbody>
+    <tbody>
+      ${ketRows}
+    </tbody>
   </table>
 
-  <div class="p-footer">Dicetak: ${new Date().toLocaleString('id-ID')}</div>
+  <div class="section-title" style="page-break-before:always;">IV. Hasil Evaluasi Tes Buta Warna (Ishihara 38 Plate)</div>
+  <div style="background:${isNormalBw ? '#ecfdf5' : '#fffbeb'}; border:1px solid ${isNormalBw ? '#a7f3d0' : '#fde68a'}; border-radius:4px; padding:6px 10px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+    <div>
+      <b style="color:${isNormalBw ? '#059669' : '#d97706'}; font-size:10px;">
+        ${isNormalBw ? '✓ Penglihatan Warna Normal' : '⚠️ Terindikasi Buta Warna Parsial / Defisiensi Warna'}
+      </b>
+      <div style="font-size:8.5px; color:#475569; margin-top:1px;">
+        Kandidat membaca tepat <b>${bwBenar} dari 38 Plate Ishihara</b>. ${isNormalBw ? 'Persepsi penglihatan warna dalam batas normal klinis.' : 'Disarankan verifikasi lanjutan dengan buku tes Ishihara fisik.'}
+      </div>
+    </div>
+    <div style="text-align:right;">
+      <span style="font-size:13px; font-weight:800; color:${isNormalBw ? '#059669' : '#d97706'};">${bwBenar} / 38 Sesuai</span>
+    </div>
+  </div>
 
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => { window.focus(); window.print(); }, 250);
-    });
-  <\/script>
-</body>
-</html>`;
+  <div class="ish-grid">
+    ${bwCards.join('')}
+  </div>
+
+  ${'</' + 'body>'}
+  ${'</' + 'html>'}`;
 
   const printWin = window.open('', '_blank');
   if (!printWin) {
-    alert("Pop-up diblokir browser! Harap izinkan pop-up untuk situs ini agar lembar cetak dapat dibuka.");
+    alert("Pop-up diblokir browser! Harap izinkan pop-up untuk situs ini agar cetak bisa terbuka.");
     return;
   }
   printWin.document.open();
   printWin.document.write(html);
   printWin.document.close();
   setTimeout(() => {
-    try {
-      printWin.focus();
-      printWin.print();
-    } catch(e) {}
+    try { printWin.focus(); printWin.print(); } catch(e) {}
   }, 400);
 }
 
 // ════════════════════════════════════════════════
-//  PRINT REKAPITULASI SEMUA PESERTA
+//  PRINT REKAPITULASI SEMUA PESERTA (A4 LANDSCAPE)
 // ════════════════════════════════════════════════
 function printRekap() {
-  if (!allData.length) {
+  const dataToPrint = filteredData.length ? filteredData : allData;
+  if (!dataToPrint.length) {
     alert('Belum ada data peserta untuk dicetak.');
     return;
   }
 
-  const avgSkor = (allData.reduce((a, r) => a + (r.skor || 0), 0) / allData.length).toFixed(1);
-  const tabSwitchCount = allData.filter(r => (r.tab_switch || 0) > 0).length;
+  const avgSkor = (dataToPrint.reduce((a, r) => a + evaluatePsikotes(r).skor, 0) / dataToPrint.length).toFixed(1);
+  const tabSwitchCount = dataToPrint.filter(r => (r.tab_switch || 0) > 0).length;
 
-  const tableRows = allData.map((row, idx) => {
-    const ketSkor = row.ketelitian && row.ketelitian._skor !== undefined
-      ? `${row.ketelitian._skor} / ${row.ketelitian._total}` : '-';
+  const tableRows = dataToPrint.map((row, idx) => {
+    const evalP = evaluatePsikotes(row);
+    const evalK = evaluateKetelitian(row);
+    const ketSkor = evalK.hasData ? `${evalK.skor} / ${evalK.total}` : '-';
     const posisi = row.biodata?.posisi || '-';
-    const isLulus = row.total_soal && (row.skor / row.total_soal) >= 0.6;
+    const isLulus = evalP.isLulus;
     return `
       <tr>
         <td style="text-align:center;">${idx + 1}</td>
         <td><b>${escapeHtml(row.nama || '-')}</b></td>
         <td>${escapeHtml(posisi)}</td>
-        <td style="font-family:monospace; font-size:9.5px;">${escapeHtml(row.waktu_submit || '-')}</td>
-        <td style="text-align:center;"><b>${row.skor ?? '-'}</b> / ${row.total_soal ?? '-'}</td>
+        <td style="font-family:monospace; font-size:9px;">${escapeHtml(row.waktu_submit || '-')}</td>
+        <td style="text-align:center; font-weight:bold;">${evalP.skor} / ${evalP.total}</td>
         <td style="text-align:center;">${ketSkor}</td>
-        <td style="text-align:center; ${row.tab_switch > 0 ? 'color:#e63946; font-weight:bold;' : ''}">
-          ${row.tab_switch > 0 ? `${row.tab_switch}x` : '0'}
+        <td style="text-align:center; ${row.tab_switch > 0 ? 'color:#dc2626; font-weight:bold;' : ''}">
+          ${row.tab_switch > 0 ? `${row.tab_switch}x` : '0x'}
         </td>
-        <td style="text-align:center; font-weight:bold; color:${isLulus ? '#2a9d8f' : '#e63946'};">
-          ${isLulus ? 'Lulus' : 'Di Bawah Standar'}
+        <td style="text-align:center; font-weight:bold; color:${isLulus ? '#059669' : '#dc2626'};">
+          ${isLulus ? 'MEMENUHI' : 'DI BAWAH STANDAR'}
         </td>
       </tr>
     `;
@@ -652,58 +2421,36 @@ function printRekap() {
 <style>
   @page { size: A4 landscape; margin: 12mm; }
   * { box-sizing: border-box; }
-  body {
-    font-family: Arial, Helvetica, sans-serif;
-    color: #1a2744; font-size: 11px; margin: 0; line-height: 1.4;
-  }
-  .header {
-    border-bottom: 2px solid #1a2744;
-    padding-bottom: 8px; margin-bottom: 12px;
-    display: flex; justify-content: space-between; align-items: flex-end;
-  }
-  .header h1 { font-size: 16px; margin: 0 0 4px; font-weight: bold; }
-  .header .sub { font-size: 11px; color: #6b7a99; }
-  .stats-bar {
-    display: flex; gap: 12px; margin-bottom: 14px;
-  }
-  .stat-box {
-    border: 1px solid #dde3f0; border-radius: 6px; padding: 6px 12px;
-    background: #f8fafc; font-size: 10px;
-  }
-  .stat-box b { font-size: 13px; color: #1a2744; }
-  table {
-    width: 100%; border-collapse: collapse; font-size: 10px;
-  }
-  th, td {
-    border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left;
-  }
-  th {
-    background: #f1f5f9; text-transform: uppercase; font-size: 9px;
-    color: #475569; font-weight: bold;
-  }
-  tr:nth-child(even) { background: #fafbfd; }
-  .footer {
-    margin-top: 16px; font-size: 9px; color: #64748b;
-    display: flex; justify-content: space-between;
-  }
+  body { font-family: Arial, sans-serif; color: #0f172a; font-size: 10px; margin: 0; line-height: 1.4; }
+  .header { border-bottom: 2px solid #0f172a; padding-bottom: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .header h1 { font-size: 15px; margin: 0 0 4px; font-weight: bold; }
+  .header .sub { font-size: 10px; color: #64748b; }
+  .stats-bar { display: flex; gap: 12px; margin-bottom: 14px; }
+  .stat-box { border: 1px solid #cbd5e1; border-radius: 6px; padding: 6px 12px; background: #f8fafc; font-size: 10px; }
+  .stat-box b { font-size: 13px; color: #0f172a; }
+  table { width: 100%; border-collapse: collapse; font-size: 9.5px; }
+  th, td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; }
+  th { background: #f1f5f9; text-transform: uppercase; font-size: 8.5px; color: #475569; font-weight: bold; }
+  tr:nth-child(even) { background: #fbfcfe; }
+  .footer { margin-top: 16px; font-size: 9px; color: #64748b; display: flex; justify-content: space-between; }
 </style>
 </head>
-<body>
+<body onload="setTimeout(function(){ window.focus(); window.print(); }, 250)">
   <div class="header">
     <div>
-      <div style="font-size:10px; font-weight:bold; color:#6b7a99; letter-spacing:0.5px;">PT. SUMATERA KEMASINDO</div>
-      <h1>Laporan Rekapitulasi Hasil Psikotes Online</h1>
-      <div class="sub">Total Peserta: ${allData.length} orang</div>
+      <div style="font-size:10px; font-weight:bold; color:#1e40af; letter-spacing:0.5px;">PT. SUMATERA KEMASINDO</div>
+      <h1>Laporan Rekapitulasi Penilaian Psikotes Online</h1>
+      <div class="sub">Total Data Tercetak: ${dataToPrint.length} orang kandidat</div>
     </div>
-    <div style="text-align:right; font-size:10px; color:#6b7a99;">
+    <div style="text-align:right; font-size:9.5px; color:#64748b;">
       Dicetak: ${new Date().toLocaleString('id-ID')}
     </div>
   </div>
 
   <div class="stats-bar">
-    <div class="stat-box">Total Peserta: <b>${allData.length}</b></div>
-    <div class="stat-box">Rata-rata Skor: <b>${avgSkor} / ${allData[0]?.total_soal || '-'}</b></div>
-    <div class="stat-box">Terdeteksi Pindah Tab (≥1x): <b>${tabSwitchCount} peserta</b></div>
+    <div class="stat-box">Total Peserta: <b>${dataToPrint.length}</b></div>
+    <div class="stat-box">Rata-rata Skor: <b>${avgSkor} / ${dataToPrint[0]?.total_soal || 15}</b></div>
+    <div class="stat-box">Terdeteksi Pindah Tab: <b>${tabSwitchCount} peserta</b></div>
   </div>
 
   <table>
@@ -716,24 +2463,19 @@ function printRekap() {
         <th style="width:12%; text-align:center;">Skor Psikotes</th>
         <th style="width:12%; text-align:center;">Skor Ketelitian</th>
         <th style="width:8%; text-align:center;">Pindah Tab</th>
-        <th style="width:10%; text-align:center;">Status</th>
+        <th style="width:10%; text-align:center;">Status Kelulusan</th>
       </tr>
     </thead>
     <tbody>${tableRows}</tbody>
   </table>
 
   <div class="footer">
-    <span>Dokumen Rahasia — PT. Sumatera Kemasindo</span>
-    <span>Halaman Rekapitulasi</span>
+    <span>Dokumen Resmi Rekrutmen — PT. Sumatera Kemasindo</span>
+    <span>Halaman Rekapitulasi Penilaian</span>
   </div>
 
-  <script>
-    window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => { window.focus(); window.print(); }, 250);
-    });
-  <\/script>
-</body>
-</html>`;
+  ${'</' + 'body>'}
+  ${'</' + 'html>'}`;
 
   const printWin = window.open('', '_blank');
   if (!printWin) {
@@ -744,10 +2486,7 @@ function printRekap() {
   printWin.document.write(html);
   printWin.document.close();
   setTimeout(() => {
-    try {
-      printWin.focus();
-      printWin.print();
-    } catch(e) {}
+    try { printWin.focus(); printWin.print(); } catch(e) {}
   }, 400);
 }
 
@@ -757,48 +2496,615 @@ function printRekap() {
 function exportExcel() {
   if (!allData.length) { alert('Belum ada data untuk diexport.'); return; }
 
-  // Sheet 1: Ringkasan
-  const ringkasan = allData.map(row => ({
-    Nama: row.nama || '-',
-    'Waktu Submit': row.waktu_submit || '-',
-    'Skor Psikotes': row.skor ?? '-',
-    'Total Soal': row.total_soal ?? '-',
-    'Skor Ketelitian': row.ketelitian?._skor ?? '-',
-    'Total Ketelitian': row.ketelitian?._total ?? '-',
-    'Pindah Tab': row.tab_switch ?? 0,
-    Posisi: row.biodata?.posisi || '-',
-    'No. HP': row.biodata?.no_hp || '-',
-    Email: row.biodata?.email || '-',
-    Pendidikan: row.biodata?.pendidikan || '-',
-  }));
+  // Sheet 1: Ringkasan (menggunakan kunci jawaban aktif)
+  const ringkasan = allData.map((row, idx) => {
+    const evalP = evaluatePsikotes(row);
+    const evalK = evaluateKetelitian(row);
+    const evalI = evaluateIshihara(row);
+    return {
+      No: idx + 1,
+      Nama: row.nama || '-',
+      Posisi: row.biodata?.posisi || '-',
+      'Waktu Submit': row.waktu_submit || '-',
+      'Skor Psikotes': evalP.skor,
+      'Total Soal': evalP.total,
+      'Persentase Psikotes': `${evalP.pct}%`,
+      'Skor Ketelitian': evalK.skor,
+      'Total Ketelitian': evalK.total,
+      'Plate Ishihara Normal': evalI.hasData ? `${evalI.benarCount} / 38` : '-',
+      'Pindah Tab (Kecurangan)': row.tab_switch ?? 0,
+      'Status Kelulusan': evalP.isLulus ? 'MEMENUHI' : 'DI BAWAH STANDAR',
+      'No. HP': row.biodata?.no_hp || '-',
+      Email: row.biodata?.email || '-',
+      Pendidikan: row.biodata?.pendidikan || '-',
+      Sekolah: row.biodata?.sekolah || '-',
+      Jurusan: row.biodata?.jurusan || '-',
+    };
+  });
 
-  // Sheet 2: Detail Jawaban (per baris = 1 soal per peserta)
+  // Sheet 2: Detail Jawaban Per Soal (Komparasi Lengkap dengan Kunci Aktif)
   const detailJawaban = [];
   allData.forEach(row => {
-    const jw = row.jawaban || {};
-    Object.values(jw).sort((a, b) => (a.no_urut || 0) - (b.no_urut || 0)).forEach(item => {
+    const evalP = evaluatePsikotes(row);
+    evalP.items.forEach(item => {
       detailJawaban.push({
-        Nama: row.nama || '-',
-        No: item.no_urut,
+        'Nama Peserta': row.nama || '-',
+        'Posisi Dilamar': row.biodata?.posisi || '-',
+        'No. Soal': item.no_urut,
         Kategori: item.kategori,
-        Soal: item.soal,
-        'Jawaban Peserta': item.pilihan_user,
-        'Jawaban Benar': item.jawaban_benar,
+        Pertanyaan: item.soal,
+        'Jawaban Peserta (Real)': item.pilihan_user || 'Tidak Dijawab',
+        'Jawaban Benar (Kunci)': item.jawaban_benar,
         Status: item.benar ? 'Benar' : 'Salah',
       });
     });
   });
 
-  // Sheet 3: Biodata Lengkap
-  const biodataLengkap = allData.map(row => ({ Nama: row.nama || '-', ...row.biodata }));
+  // Sheet 3: Biodata Lengkap Peserta
+  const biodataLengkap = allData.map(row => ({
+    Nama: row.nama || '-',
+    Posisi: row.biodata?.posisi || '-',
+    'Waktu Submit': row.waktu_submit || '-',
+    ...row.biodata
+  }));
 
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ringkasan), 'Ringkasan');
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(detailJawaban), 'Detail Jawaban');
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(biodataLengkap), 'Biodata');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(ringkasan), 'Rekap Hasil');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(detailJawaban), 'Rincian Soal & Jawaban');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(biodataLengkap), 'Biodata Lengkap');
 
   const tanggal = new Date().toISOString().slice(0, 10);
   XLSX.writeFile(wb, `Hasil_Psikotes_SK_${tanggal}.xlsx`);
+}
+
+// ════════════════════════════════════════════════
+//  UI MODAL KELOLA SOAL & KUNCI JAWABAN
+// ════════════════════════════════════════════════
+function setupKeyManagerDialog() {
+  const dlg = document.getElementById('key-manager-modal');
+  if (!dlg) return;
+
+  dlg.addEventListener('close', () => {
+    dlg.returnValue = '';
+    resetAllConfirmState();
+  });
+
+  // Fallback light-dismiss jika closedby="any" belum didukung browser
+  if (!('closedBy' in HTMLDialogElement.prototype)) {
+    const outside = (e, dialog) => {
+      const r = dialog.getBoundingClientRect();
+      return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+    };
+    let pressedOutside = false;
+    dlg.addEventListener('pointerdown', (e) => {
+      pressedOutside = outside(e, dlg);
+    });
+    dlg.addEventListener('pointerup', (e) => {
+      if (pressedOutside && outside(e, dlg)) {
+        closeKeyManager();
+      }
+      pressedOutside = false;
+    });
+  }
+}
+
+function openKeyManager(tab = currentKmTab || 'psikotes', focusItemKey = null) {
+  const dlg = document.getElementById('key-manager-modal');
+  if (!dlg) return;
+
+  if (focusItemKey) {
+    const searchEl = document.getElementById('km-search');
+    if (searchEl) searchEl.value = '';
+  }
+
+  switchKmTab(tab);
+  updateCustomKeyIndicators();
+  setKmFeedback(
+    getCustomKeyCount() > 0
+      ? `${getCustomKeyCount()} kunci jawaban sedang disesuaikan. Perubahan otomatis disimpan.`
+      : 'Semua kunci masih menggunakan bawaan asli.'
+  );
+
+  if (!dlg.open) {
+    if (typeof dlg.showModal === 'function') {
+      dlg.showModal();
+    } else {
+      dlg.setAttribute('open', '');
+    }
+  }
+
+  if (focusItemKey) {
+    requestAnimationFrame(() => {
+      const target = document.getElementById(`km-item-${focusItemKey}`);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        target.classList.remove('km-flash');
+        void target.offsetWidth;
+        target.classList.add('km-flash');
+      }
+    });
+  }
+}
+
+function syncPendingKeyInputs() {
+  document.querySelectorAll('.km-ishihara-input').forEach(inp => {
+    const p = Number(inp.dataset.plate);
+    const val = inp.value.trim();
+    const def = DEFAULT_ISHIHARA_KUNCI[p] || '';
+    if (!val || val === def) {
+      delete customKeyOverrides.ishihara[String(p)];
+    } else {
+      customKeyOverrides.ishihara[String(p)] = val;
+    }
+  });
+  document.querySelectorAll('.km-ketelitian-input').forEach(inp => {
+    const no = Number(inp.dataset.no);
+    const val = inp.value.trim();
+    const defRow = DEFAULT_KETELITIAN_DATA.find(r => r.no === no);
+    const defVal = defRow ? defRow.jawaban : '';
+    if (!val || val.replace(/\s+/g, '') === defVal.replace(/\s+/g, '')) {
+      delete customKeyOverrides.ketelitian[String(no)];
+    } else {
+      customKeyOverrides.ketelitian[String(no)] = val;
+    }
+  });
+}
+
+function closeKeyManager() {
+  syncPendingKeyInputs();
+  persistCustomKeys();
+  refreshAllViews();
+  const dlg = document.getElementById('key-manager-modal');
+  if (dlg && dlg.open) {
+    if (typeof dlg.close === 'function') dlg.close();
+    else dlg.removeAttribute('open');
+  }
+}
+
+function saveAndCloseKeyManager() {
+  syncPendingKeyInputs();
+  persistCustomKeys();
+  refreshAllViews();
+  setKmFeedback('✓ Semua kunci tersimpan & nilai peserta telah dihitung ulang.');
+  const dlg = document.getElementById('key-manager-modal');
+  if (dlg && dlg.open) {
+    if (typeof dlg.close === 'function') dlg.close('save');
+    else dlg.removeAttribute('open');
+  }
+}
+
+function setKmFeedback(msg, isWarn = false) {
+  const el = document.getElementById('km-save-feedback');
+  if (!el) return;
+  el.textContent = msg;
+  el.style.color = isWarn ? 'var(--warning)' : 'var(--success)';
+}
+
+function switchKmTab(tab) {
+  syncPendingKeyInputs();
+  persistCustomKeys();
+  currentKmTab = ['psikotes', 'ishihara', 'ketelitian'].includes(tab) ? tab : 'psikotes';
+
+  ['psikotes', 'ishihara', 'ketelitian'].forEach(t => {
+    const btn = document.getElementById(`km-tab-${t}`);
+    const panel = document.getElementById(`km-panel-${t}`);
+    if (btn) btn.classList.toggle('active', t === currentKmTab);
+    if (panel) panel.style.display = (t === currentKmTab) ? 'block' : 'none';
+  });
+
+  renderCurrentKmTab();
+}
+
+function renderCurrentKmTab() {
+  const q = (document.getElementById('km-search')?.value || '').trim().toLowerCase();
+  if (currentKmTab === 'psikotes') renderKmPsikotes(q);
+  else if (currentKmTab === 'ishihara') renderKmIshihara(q);
+  else if (currentKmTab === 'ketelitian') renderKmKetelitian(q);
+}
+
+function renderKmPsikotes(query) {
+  const container = document.getElementById('km-panel-psikotes');
+  if (!container) return;
+
+  const list = DEFAULT_SOAL_DATA.filter(item => {
+    if (!query) return true;
+    const hay = `${item.no} ${item.id} ${item.kategori} ${item.soal} ${item.opsi.join(' ')}`.toLowerCase();
+    return hay.includes(query);
+  });
+
+  if (!list.length) {
+    container.innerHTML = `<div style="text-align:center; padding:32px; color:var(--text-muted);">Tidak ada soal psikotes yang cocok dengan pencarian "${escapeHtml(query)}".</div>`;
+    return;
+  }
+
+  const cardsHtml = list.map(item => {
+    const activeLetter = getActivePsikotesKeyLetter(item.id);
+    const isModified = activeLetter !== item.jawaban_benar;
+    const defaultText = item.opsi[HURUF_OPSI.indexOf(item.jawaban_benar)] || '';
+
+    const optsHtml = item.opsi.map((optText, idx) => {
+      const letter = HURUF_OPSI[idx];
+      const isActive = activeLetter === letter;
+      const isDefaultOpt = item.jawaban_benar === letter;
+      return `
+        <button type="button" class="km-opt-btn ${isActive ? 'is-active-key' : ''}" onclick="setPsikotesKey('${item.id}', '${letter}')">
+          <span class="km-opt-left">
+            <span class="km-opt-letter">${letter}</span>
+            <span>${escapeHtml(optText)}</span>
+          </span>
+          <span class="km-opt-tags">
+            ${isDefaultOpt ? '<span class="km-tag-default">Bawaan</span>' : ''}
+            ${isActive ? '<span class="km-tag-active">✓ Kunci</span>' : ''}
+          </span>
+        </button>
+      `;
+    }).join('');
+
+    return `
+      <div class="km-card ${isModified ? 'is-modified' : ''}" id="km-item-${item.id}">
+        <div class="km-card-head">
+          <div class="soal-number-tag">
+            <span>Nomor ${item.no}</span>
+            <span class="soal-kat-pill">${escapeHtml(item.kategori)}</span>
+            <span class="mono" style="font-size:0.74rem; color:var(--text-muted);">${item.id}</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            ${isModified
+              ? `<span class="badge-custom-key">✏️ Disesuaikan (Bawaan: ${item.jawaban_benar})</span>
+                 <button type="button" class="btn btn-outline btn-sm" style="padding:3px 9px; font-size:0.74rem;" onclick="resetPsikotesKey('${item.id}')">↺ Kembalikan</button>`
+              : `<span class="badge badge-neutral" style="font-size:0.72rem;">Kunci Bawaan (${item.jawaban_benar})</span>`
+            }
+          </div>
+        </div>
+        <div class="km-q-title">${escapeHtml(item.soal)}</div>
+        <div class="km-opt-grid">${optsHtml}</div>
+        ${isModified ? `<div style="margin-top:8px; font-size:0.76rem; color:#92400e;">Catatan: Kunci bawaan sebelumnya adalah <b>${item.jawaban_benar}. ${escapeHtml(defaultText)}</b></div>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="km-info-note">
+      💡 Klik salah satu opsi (<b>A–E</b>) pada tiap soal di bawah untuk menjadikannya kunci jawaban aktif. Seluruh nilai peserta langsung dihitung ulang berdasarkan teks opsi jawaban yang dipilih.
+    </div>
+    <div class="km-card-list">${cardsHtml}</div>
+  `;
+}
+
+function setPsikotesKey(qId, letter) {
+  const def = DEFAULT_SOAL_DATA.find(q => q.id === qId);
+  if (!def || !HURUF_OPSI.includes(letter)) return;
+
+  const bodyEl = document.getElementById('km-body');
+  const prevScroll = bodyEl ? bodyEl.scrollTop : 0;
+
+  if (letter === def.jawaban_benar) {
+    delete customKeyOverrides.psikotes[qId];
+    setKmFeedback(`✓ Kunci Soal No. ${def.no} dikembalikan ke bawaan (Opsi ${letter}).`);
+  } else {
+    customKeyOverrides.psikotes[qId] = letter;
+    setKmFeedback(`✓ Kunci Soal No. ${def.no} diubah ke Opsi ${letter} — nilai peserta diperbarui.`);
+  }
+
+  persistCustomKeys();
+  renderKmPsikotes((document.getElementById('km-search')?.value || '').trim().toLowerCase());
+  if (bodyEl) bodyEl.scrollTop = prevScroll;
+  refreshAllViews();
+}
+
+function resetPsikotesKey(qId) {
+  const def = DEFAULT_SOAL_DATA.find(q => q.id === qId);
+  if (!def) return;
+  setPsikotesKey(qId, def.jawaban_benar);
+}
+
+function renderKmIshihara(query) {
+  const container = document.getElementById('km-panel-ishihara');
+  if (!container) return;
+
+  const rows = [];
+  for (let p = 1; p <= 38; p++) {
+    const plateMeta = ishiharaPlates[p - 1] || { plate: p, label: 'Angka / Warna', type: 'number' };
+    const defaultKey = DEFAULT_ISHIHARA_KUNCI[p] || 'Tidak ada';
+    const activeKey = getActiveIshiharaKey(p);
+    const hay = `plate ${p} ${plateMeta.label} ${defaultKey} ${activeKey}`.toLowerCase();
+    if (query && !hay.includes(query)) continue;
+
+    const isModified = activeKey !== defaultKey;
+    const imgUrl = getIshiharaPlateUrl(p);
+
+    rows.push(`
+      <tr id="km-item-plate_${p}" class="${isModified ? 'km-row-modified' : ''}">
+        <td style="text-align:center; font-weight:700;">Plate ${p}</td>
+        <td style="text-align:center; padding:6px;">
+          <img src="${imgUrl}" alt="Plate ${p}" style="width:44px; height:44px; border-radius:50%; border:1.5px solid var(--border); vertical-align:middle;">
+        </td>
+        <td>
+          <div style="font-weight:700; font-size:0.84rem; color:var(--text-main);">${escapeHtml(plateMeta.label)}</div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;">
+            Kunci bawaan: <b>${escapeHtml(defaultKey)}</b>
+          </div>
+        </td>
+        <td style="min-width:210px;">
+          <input type="text"
+            class="km-input km-ishihara-input ${isModified ? 'is-modified' : ''}"
+            data-plate="${p}"
+            value="${escapeHtml(activeKey)}"
+            placeholder="Contoh: 12, Tidak ada, Orange"
+            oninput="onIshiharaInputLive(${p}, this)"
+            onchange="onIshiharaInputCommit(${p}, this)">
+        </td>
+        <td style="text-align:center; white-space:nowrap;">
+          <span id="km-ish-status-${p}" class="${isModified ? 'badge-custom-key' : 'badge badge-neutral'}" style="font-size:0.72rem;">
+            ${isModified ? 'Diubah' : 'Bawaan'}
+          </span>
+          <button type="button" id="km-ish-reset-${p}" class="btn btn-outline btn-sm"
+            style="padding:3px 8px; font-size:0.74rem; margin-left:4px; display:${isModified ? 'inline-flex' : 'none'};"
+            onclick="resetIshiharaKey(${p})">↺</button>
+        </td>
+      </tr>
+    `);
+  }
+
+  container.innerHTML = `
+    <div class="km-info-note">
+      💡 Kunci <b>"Tidak ada"</b> otomatis menerima jawaban <code>-</code> atau kosong dari peserta. Kunci warna seperti <b>"Orange"</b> otomatis menerima variasi penulisan <i>oranye / oren / jingga</i>.
+    </div>
+    ${rows.length ? `
+      <table class="data-compare-table">
+        <thead>
+          <tr>
+            <th style="width:80px; text-align:center;">Plate</th>
+            <th style="width:70px; text-align:center;">Gambar</th>
+            <th>Pertanyaan &amp; Bawaan</th>
+            <th>Kunci Jawaban Normal Aktif</th>
+            <th style="width:140px; text-align:center;">Status</th>
+          </tr>
+        </thead>
+        <tbody>${rows.join('')}</tbody>
+      </table>
+    ` : `<div style="text-align:center; padding:32px; color:var(--text-muted);">Tidak ada plate Ishihara cocok dengan "${escapeHtml(query)}".</div>`}
+  `;
+}
+
+function updateIshiharaRowDom(plateNum, inputEl, isModified) {
+  if (inputEl) inputEl.classList.toggle('is-modified', isModified);
+  const rowEl = document.getElementById(`km-item-plate_${plateNum}`);
+  if (rowEl) rowEl.classList.toggle('km-row-modified', isModified);
+  const badgeEl = document.getElementById(`km-ish-status-${plateNum}`);
+  if (badgeEl) {
+    badgeEl.className = isModified ? 'badge-custom-key' : 'badge badge-neutral';
+    badgeEl.textContent = isModified ? 'Diubah' : 'Bawaan';
+  }
+  const resetBtn = document.getElementById(`km-ish-reset-${plateNum}`);
+  if (resetBtn) resetBtn.style.display = isModified ? 'inline-flex' : 'none';
+}
+
+function onIshiharaInputLive(plateNum, inputEl) {
+  const val = inputEl.value.trim();
+  const def = DEFAULT_ISHIHARA_KUNCI[plateNum] || '';
+  const isModified = Boolean(val && val !== def);
+  if (!val || val === def) {
+    delete customKeyOverrides.ishihara[String(plateNum)];
+  } else {
+    customKeyOverrides.ishihara[String(plateNum)] = val;
+  }
+  persistCustomKeys();
+  updateIshiharaRowDom(plateNum, inputEl, isModified);
+}
+
+function onIshiharaInputCommit(plateNum, inputEl) {
+  onIshiharaInputLive(plateNum, inputEl);
+  if (!inputEl.value.trim()) {
+    inputEl.value = DEFAULT_ISHIHARA_KUNCI[plateNum] || '';
+    updateIshiharaRowDom(plateNum, inputEl, false);
+  }
+  setKmFeedback(`✓ Kunci Ishihara Plate ${plateNum} diperbarui — hasil evaluasi dihitung ulang.`);
+  refreshAllViews();
+}
+
+function resetIshiharaKey(plateNum) {
+  delete customKeyOverrides.ishihara[String(plateNum)];
+  persistCustomKeys();
+  const bodyEl = document.getElementById('km-body');
+  const prevScroll = bodyEl ? bodyEl.scrollTop : 0;
+  renderKmIshihara((document.getElementById('km-search')?.value || '').trim().toLowerCase());
+  if (bodyEl) bodyEl.scrollTop = prevScroll;
+  setKmFeedback(`✓ Kunci Plate ${plateNum} dikembalikan ke bawaan (${DEFAULT_ISHIHARA_KUNCI[plateNum]}).`);
+  refreshAllViews();
+}
+
+function detectKetelitianDiffs(seqA, seqB) {
+  const aToks = String(seqA || '').trim().split(/\s+/);
+  const bToks = String(seqB || '').trim().split(/\s+/);
+  const len = Math.max(aToks.length, bToks.length);
+  const diffs = [];
+  for (let i = 0; i < len; i++) {
+    if (aToks[i] !== bToks[i]) diffs.push(i + 1);
+  }
+  return diffs;
+}
+
+function renderKetelitianTokens(seq, diffPositions) {
+  const diffSet = new Set(diffPositions);
+  return String(seq || '').trim().split(/\s+/).map((tok, i) => {
+    const pos = i + 1;
+    const esc = escapeHtml(tok);
+    return diffSet.has(pos) ? `<span class="km-diff-tok" title="Posisi ke-${pos} berbeda">${esc}</span>` : esc;
+  }).join(' ');
+}
+
+function renderKmKetelitian(query) {
+  const container = document.getElementById('km-panel-ketelitian');
+  if (!container) return;
+
+  const rows = [];
+  DEFAULT_KETELITIAN_DATA.forEach(item => {
+    const activeKey = getActiveKetelitianKey(item.no);
+    const hay = `no ${item.no} ${item.a} ${item.b} ${item.jawaban} ${activeKey}`.toLowerCase();
+    if (query && !hay.includes(query)) return;
+
+    const autoDiffs = detectKetelitianDiffs(item.a, item.b);
+    const autoDiffStr = autoDiffs.join(',');
+    const isModified = activeKey.replace(/\s+/g, '') !== item.jawaban.replace(/\s+/g, '');
+    const differsFromDetected = autoDiffStr && activeKey.replace(/\s+/g, '') !== autoDiffStr;
+
+    rows.push(`
+      <tr id="km-item-ket_${item.no}" class="${isModified ? 'km-row-modified' : ''}">
+        <td style="text-align:center; font-weight:700;">${item.no}</td>
+        <td class="mono" style="font-size:0.86rem; letter-spacing:0.5px;">${renderKetelitianTokens(item.a, autoDiffs)}</td>
+        <td class="mono" style="font-size:0.86rem; letter-spacing:0.5px;">${renderKetelitianTokens(item.b, autoDiffs)}</td>
+        <td style="min-width:170px;">
+          <input type="text"
+            id="km-ket-input-${item.no}"
+            class="km-input mono km-ketelitian-input ${isModified ? 'is-modified' : ''}"
+            data-no="${item.no}"
+            value="${escapeHtml(activeKey)}"
+            placeholder="cth: 4,6"
+            oninput="onKetelitianInputLive(${item.no}, this)"
+            onchange="onKetelitianInputCommit(${item.no}, this)">
+          <div style="font-size:0.72rem; color:var(--text-muted); margin-top:4px; display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+            <span>Bawaan: <b>${escapeHtml(item.jawaban)}</b></span>
+            ${differsFromDetected
+              ? `<button type="button" class="btn-inline-key" onclick="applyDetectedKetelitianKey(${item.no}, '${autoDiffStr}')">Terapkan posisi beda: ${autoDiffStr}</button>`
+              : ''}
+          </div>
+        </td>
+        <td style="text-align:center; white-space:nowrap;">
+          <span id="km-ket-status-${item.no}" class="${isModified ? 'badge-custom-key' : 'badge badge-neutral'}" style="font-size:0.72rem;">
+            ${isModified ? 'Diubah' : 'Bawaan'}
+          </span>
+          <button type="button" id="km-ket-reset-${item.no}" class="btn btn-outline btn-sm"
+            style="padding:3px 8px; font-size:0.74rem; margin-left:4px; display:${isModified ? 'inline-flex' : 'none'};"
+            onclick="resetKetelitianKey(${item.no})">↺</button>
+        </td>
+      </tr>
+    `);
+  });
+
+  container.innerHTML = `
+    <div class="km-info-note">
+      💡 Angka yang ditandai <span class="km-diff-tok">merah</span> menunjukkan posisi digit (1–10) yang berbeda antara Kolom A dan Kolom B. Isi kunci dengan nomor posisi dipisah koma, misalnya <code>4,6</code>.
+    </div>
+    ${rows.length ? `
+      <table class="data-compare-table">
+        <thead>
+          <tr>
+            <th style="width:50px; text-align:center;">No</th>
+            <th>Kolom A</th>
+            <th>Kolom B</th>
+            <th>Kunci Posisi Berbeda</th>
+            <th style="width:130px; text-align:center;">Status</th>
+          </tr>
+        </thead>
+        <tbody>${rows.join('')}</tbody>
+      </table>
+    ` : `<div style="text-align:center; padding:32px; color:var(--text-muted);">Tidak ada baris ketelitian cocok dengan "${escapeHtml(query)}".</div>`}
+  `;
+}
+
+function updateKetelitianRowDom(no, inputEl, isModified) {
+  if (inputEl) inputEl.classList.toggle('is-modified', isModified);
+  const rowEl = document.getElementById(`km-item-ket_${no}`);
+  if (rowEl) rowEl.classList.toggle('km-row-modified', isModified);
+  const badgeEl = document.getElementById(`km-ket-status-${no}`);
+  if (badgeEl) {
+    badgeEl.className = isModified ? 'badge-custom-key' : 'badge badge-neutral';
+    badgeEl.textContent = isModified ? 'Diubah' : 'Bawaan';
+  }
+  const resetBtn = document.getElementById(`km-ket-reset-${no}`);
+  if (resetBtn) resetBtn.style.display = isModified ? 'inline-flex' : 'none';
+}
+
+function onKetelitianInputLive(no, inputEl) {
+  const val = inputEl.value.trim();
+  const defRow = DEFAULT_KETELITIAN_DATA.find(r => r.no === no);
+  const defVal = defRow ? defRow.jawaban : '';
+  const isModified = Boolean(val && val.replace(/\s+/g, '') !== defVal.replace(/\s+/g, ''));
+  if (!val || val.replace(/\s+/g, '') === defVal.replace(/\s+/g, '')) {
+    delete customKeyOverrides.ketelitian[String(no)];
+  } else {
+    customKeyOverrides.ketelitian[String(no)] = val;
+  }
+  persistCustomKeys();
+  updateKetelitianRowDom(no, inputEl, isModified);
+}
+
+function onKetelitianInputCommit(no, inputEl) {
+  onKetelitianInputLive(no, inputEl);
+  if (!inputEl.value.trim()) {
+    const defRow = DEFAULT_KETELITIAN_DATA.find(r => r.no === no);
+    inputEl.value = defRow ? defRow.jawaban : '';
+    updateKetelitianRowDom(no, inputEl, false);
+  }
+  setKmFeedback(`✓ Kunci Ketelitian No. ${no} diperbarui — nilai peserta dihitung ulang.`);
+  refreshAllViews();
+}
+
+function applyDetectedKetelitianKey(no, detectedKey) {
+  const inputEl = document.getElementById(`km-ket-input-${no}`);
+  if (inputEl) {
+    inputEl.value = detectedKey;
+    onKetelitianInputCommit(no, inputEl);
+  }
+}
+
+function resetKetelitianKey(no) {
+  delete customKeyOverrides.ketelitian[String(no)];
+  persistCustomKeys();
+  const bodyEl = document.getElementById('km-body');
+  const prevScroll = bodyEl ? bodyEl.scrollTop : 0;
+  renderKmKetelitian((document.getElementById('km-search')?.value || '').trim().toLowerCase());
+  if (bodyEl) bodyEl.scrollTop = prevScroll;
+  const defRow = DEFAULT_KETELITIAN_DATA.find(r => r.no === no);
+  setKmFeedback(`✓ Kunci Ketelitian No. ${no} dikembalikan ke bawaan (${defRow ? defRow.jawaban : '-'}).`);
+  refreshAllViews();
+}
+
+function resetCurrentKeyTab() {
+  if (currentKmTab === 'psikotes') customKeyOverrides.psikotes = {};
+  else if (currentKmTab === 'ishihara') customKeyOverrides.ishihara = {};
+  else if (currentKmTab === 'ketelitian') customKeyOverrides.ketelitian = {};
+  persistCustomKeys();
+  renderCurrentKmTab();
+  setKmFeedback(`✓ Semua kunci pada tab ${currentKmTab} dikembalikan ke bawaan.`);
+  refreshAllViews();
+}
+
+function resetAllConfirmState() {
+  resetAllPendingConfirm = false;
+  if (resetAllConfirmTimer) {
+    clearTimeout(resetAllConfirmTimer);
+    resetAllConfirmTimer = null;
+  }
+  const btn = document.getElementById('km-reset-all-btn');
+  if (btn) {
+    btn.textContent = '↺ Reset Semua Default';
+    btn.style.background = '#fff';
+    btn.style.color = 'var(--danger)';
+  }
+}
+
+function handleResetAllClick() {
+  const btn = document.getElementById('km-reset-all-btn');
+  if (!resetAllPendingConfirm) {
+    resetAllPendingConfirm = true;
+    if (btn) {
+      btn.textContent = '⚠️ Klik Lagi untuk Konfirmasi Reset';
+      btn.style.background = 'var(--danger-bg)';
+      btn.style.color = '#991b1b';
+    }
+    setKmFeedback('Klik tombol konfirmasi sekali lagi untuk mereset semua kunci ke bawaan.', true);
+    resetAllConfirmTimer = setTimeout(() => resetAllConfirmState(), 3500);
+    return;
+  }
+
+  resetAllConfirmState();
+  customKeyOverrides = { psikotes: {}, ishihara: {}, ketelitian: {} };
+  persistCustomKeys();
+  renderCurrentKmTab();
+  setKmFeedback('✓ Seluruh kunci jawaban (Psikotes, Ishihara, Ketelitian) dikembalikan ke bawaan.');
+  refreshAllViews();
 }
 </script>
 </body>
